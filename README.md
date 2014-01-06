@@ -15,7 +15,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png" />
     <link rel="logo" type="image/svg" href="https://github-media-downloads.s3.amazonaws.com/github-logo.svg" />
     <meta property="og:image" content="https://github.global.ssl.fastly.net/images/modules/logos_page/Octocat.png">
-    <meta name="hostname" content="github-fe121-cp1-prd.iad.github.net">
+    <meta name="hostname" content="github-fe126-cp1-prd.iad.github.net">
     <meta name="ruby" content="ruby 1.9.3p194-tcs-github-tcmalloc (a846054d10) [x86_64-linux]">
     <link rel="assets" href="https://github.global.ssl.fastly.net/">
     <link rel="conduit-xhr" href="https://ghconduit.com:25035/">
@@ -26,7 +26,7 @@
     <meta name="msapplication-TileImage" content="/windows-tile.png" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="selected-link" value="repo_source" data-pjax-transient />
-    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="6272CEE3:6F78:2879613:52CB3891" name="octolytics-dimension-request_id" />
+    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="6272CEE3:6F86:75642F1:52CB390A" name="octolytics-dimension-request_id" />
     
 
     
@@ -34,7 +34,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <meta content="authenticity_token" name="csrf-param" />
-<meta content="DQ3bXOVNb9m1gr9l/JugZv+wVTzr5eTrNZy1qrUTEKQ=" name="csrf-token" />
+<meta content="2LbCfUfqK2eSTvcSlAbdjH8q0smmYAmZKwPCn4WiGxk=" name="csrf-token" />
 
     <link href="https://github.global.ssl.fastly.net/assets/github-3944f96c1c19f752fe766b332fb7716555c8296e.css" media="all" rel="stylesheet" type="text/css" />
     <link href="https://github.global.ssl.fastly.net/assets/github2-e528a323feb29c53d05a1de6b96c8a2c138a6983.css" media="all" rel="stylesheet" type="text/css" />
@@ -488,7 +488,7 @@
     </a>
 
     <ul class="site-footer-links">
-      <li>&copy; 2014 <span title="0.02235s from github-fe121-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+      <li>&copy; 2014 <span title="0.02325s from github-fe126-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
         <li><a href="/site/terms">Terms</a></li>
         <li><a href="/site/privacy">Privacy</a></li>
         <li><a href="/security">Security</a></li>
