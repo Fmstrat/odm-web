@@ -9,12 +9,12 @@
 
 	include 'include/checklogin.php';
 
-	if (isset($_POST["regId"]) && isset($_POST["message"]) && isset($_POST["enc_key"])) {
+	if (isset($_POST["regId"]) && isset($_POST["message"]) && isset($_POST["token"])) {
 		$regId = $_POST["regId"];
 		$message = $_POST["message"];
-		$enc_key = $_POST["enc_key"];
+		$token = $_POST["token"];
 		$mcrypt = new MCrypt();
-		$key = $mcrypt->formatKey($enc_key);
+		$key = $mcrypt->formatKey($token);
 		$encrypted = $mcrypt->encrypt($message, $key);
 		$registration_ids = array($regId);
 		$messageA = array("message" => $encrypted);

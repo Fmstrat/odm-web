@@ -15,25 +15,29 @@
 	}
 
 	// Register user
-	function storeUser($name, $enckey, $gcm_regid, $user_id) {
+	function storeUser($name, $gcm_regid, $user_id) {
 		global $con;
-		$stmt = $con->prepare("select * from gcm_users where gcm_regid=?");
-		$stmt->execute(array($gcm_regid));
+		$stmt = $con->prepare("select * from gcm_users where user_id=? and gcm_regid=?");
+		$stmt->execute(array($user_id,$gcm_regid));
 		$check_rows = $stmt->rowCount();
 		if ($check_rows > 0) {
 			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			foreach ($rows as $row) {
-				if ($row['enckey'] == $enckey) {
-					$stmt2 = $con->prepare("update gcm_users set name = ? where gcm_regid=?");
-					$stmt2->execute(array($name, $gcm_regid));
-				} else {
-					return false;
-				}
+				$stmt2 = $con->prepare("update gcm_users set name = ? where gcm_regid=?");
+				$stmt2->execute(array($name, $gcm_regid));
 			}
 		} else {
-			$stmt = $con->prepare("INSERT INTO gcm_users(name, enckey, gcm_regid, user_id, created_at) VALUES(?, ?, ?, ?, NOW())");
-			$stmt->execute(array($name, $enckey, $gcm_regid, $user_id));
+			$stmt = $con->prepare("INSERT INTO gcm_users(name, gcm_regid, user_id, created_at) VALUES(?, ?, ?, NOW())");
+			$stmt->execute(array($name, $gcm_regid, $user_id));
 		}
+		$stmt = $con->prepare("select * from users where user_id=?");
+		$stmt->execute(array($user_id));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$token = "";
+		foreach ($rows as $row) {
+			$token = $row['token'];
+		}
+		return $token;
 	}
 
 	// Insert message into database
@@ -54,7 +58,7 @@
 
 	function getAllUsers() {
 		global $con;
-		$stmt = $con->prepare("select * FROM gcm_users order by name, created_at");
+		$stmt = $con->prepare("select gu.*, u.token FROM gcm_users gu, users u where gu.user_id = u.user_id order by gu.name, gu.created_at;");
 		$stmt->execute();
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $rows;
@@ -87,7 +91,7 @@
 	function getUserRecord($username) {
 		global $con;
 		$matchrow = null;
-		$sql = "select user_id, hash from users where username = ?";
+		$sql = "select user_id, hash, token from users where username = ?";
 		$stmt = $con->prepare($sql);
 		$stmt->execute(array($username));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -103,12 +107,13 @@
 		$stmt->execute(array($username));
 		$check_rows = $stmt->rowCount();
 		if ($check_rows > 0) {
-			return false;
+			return "";
 		} else {
-			$stmt = $con->prepare("INSERT INTO users(username, hash, created_at) VALUES(?, ?, NOW())");
-			$stmt->execute(array($username, $hash));
+			$token = generateRandomString();
+			$stmt = $con->prepare("INSERT INTO users(username, hash, token, created_at) VALUES(?, ?, ?, NOW())");
+			$stmt->execute(array($username, $hash, $token));
 		}
-		return true;
+		return $token;
 	}
 
 	function validateRegId($user_id, $gcm_regid) {
@@ -142,6 +147,58 @@
 			$sql = "delete from gcm_users where id = ?";
 			$stmt = $con->prepare($sql);
 			$stmt->execute(array($id));
+		}
+	}
+
+	function GUID() {
+		if (function_exists('com_create_guid') === true) {
+			return trim(com_create_guid(), '{}');
+		}
+		return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+	}
+
+	function generateRandomString($length = 16) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, strlen($characters) - 1)];
+		}
+		return $randomString;
+	}
+
+	function checkDatabase() {
+		global $con;
+		// Database is missing the token field. Add it, and create a token for encryption
+		$sql = "show columns from users like 'token'";
+		$stmt = $con->prepare($sql);
+		$stmt->execute();
+		$check_rows = $stmt->rowCount();
+		if ($check_rows == 0) {
+			$sql = "alter table users add token varchar(255) not null after hash;";
+			$stmt = $con->prepare($sql);
+			$stmt->execute();
+			$sql = "select * from users;";
+			$stmt = $con->prepare($sql);
+			$stmt->execute();
+			$check_rows = $stmt->rowCount();
+			if ($check_rows > 0) {
+				$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				foreach ($rows as $row) {
+					$user_id = $row['user_id'];
+					$stmt2 = $con->prepare("update users set token = ? where user_id = ?");
+					$stmt2->execute(array(generateRandomString(), $user_id));
+				}
+			}
+		}
+		// Remove unrequired enckey from gcm_users
+		$sql = "show columns from gcm_users like 'enckey'";
+		$stmt = $con->prepare($sql);
+		$stmt->execute();
+		$check_rows = $stmt->rowCount();
+		if ($check_rows != 0) {
+			$sql = "alter table gcm_users drop enckey;";
+			$stmt = $con->prepare($sql);
+			$stmt->execute();
 		}
 	}
 ?>

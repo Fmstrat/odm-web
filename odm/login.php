@@ -15,6 +15,7 @@
 			setcookie("user_id", $user['user_id']);
 			setcookie("username", $username);
 			setcookie("hash", $user['hash']);
+			setcookie("token", $user['token']);
 			header("Location: index.php");
 			exit;
 		} else

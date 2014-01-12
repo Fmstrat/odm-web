@@ -9,11 +9,10 @@
 		}
 
 		function formatKey($key) {
-			$newkey = "";
+			$newkey = $key;
 			if (strlen($key) > 16) {
 				$newkey = substr($key, 0, 16);
 			} else if (strlen($key) < 16) {
-				$newkey = $key;
 				while (strlen($newkey) < 16) {
 					$newkey .= "0";
 				}

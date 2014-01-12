@@ -2,6 +2,7 @@
 	include 'include/config.php';
 	include 'include/db.php';
 	dbconnect();
+	checkDatabase();
 
 	include 'include/checklogin.php';
 
@@ -34,7 +35,7 @@
 							$first_name = $row['name'];
 							$first_gcm_regid = $row['gcm_regid'];
 							$first_created_at = $formated_created_at;
-							$first_enc_key = $row['enckey'];
+							$first_token = $row['token'];
 							$first_id = $row['id'];
 							$dropdown .= '<div class="device-summary selected-tab" onclick="selectDevice(\''.$row['id'].'\')">';
 						} else {
@@ -99,7 +100,7 @@
 					<div class="details">
 						<script type="text/javascript">
 							var regId = "<?php echo $first_gcm_regid; ?>";
-							var enc_key = "<?php echo $first_enc_key; ?>";
+							var token = "<?php echo $first_token; ?>";
 						</script>
 						<div class="status-area" id="curlocation-container"></div>
 						<div class="detail-group">

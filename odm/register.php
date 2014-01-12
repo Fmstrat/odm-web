@@ -26,12 +26,13 @@
 			$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
 			$salt = sprintf("$2a$%02d$", $cost) . $salt;
 			$hash = crypt($password, $salt);
-			storeUsername($username, $hash);
+			$token = storeUsername($username, $hash);
 			$user = getUserRecord($username);
 			$user_id = $user['user_id'];
 			setcookie("user_id", $user_id);
 			setcookie("username", $username);
 			setcookie("hash", $hash);
+			setcookie("token", $token);
 			header("Location: index.php");
 			exit;
 		}

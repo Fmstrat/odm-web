@@ -46,7 +46,7 @@
 
 	function sendPushNotification(regId, message) {
 		toggleCommands();
-		$.post( "send_message.php", { enc_key: enc_key, regId: regId, message: message } );
+		$.post( "send_message.php", { token: token, regId: regId, message: message } );
 		if (message == "Command:GetLocation" || message == "Command:FrontPhoto" || message == "Command:RearPhoto") {
 			waitingForResponse();
 		} else {
