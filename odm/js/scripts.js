@@ -17,6 +17,19 @@
 			toggleCommands();
 	}
 
+	function sendLockPass(regId) {
+		var password = prompt("Enter the password to lock the device with.", "");
+		if (password.length < 4) {
+			alert("Password must be 4 or more characters.");
+			toggleCommands();
+		} else
+			if (password && password != "")
+				sendPushNotification(regId, "Command:LockPass:"+password);
+			else
+				toggleCommands();
+	}
+
+
 	function sendSMS(regId) {
 		var message = prompt("Enter the phone number to receive the SMS.", "");
 		if (message && message != "")
