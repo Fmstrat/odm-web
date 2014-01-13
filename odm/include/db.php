@@ -51,7 +51,6 @@
 
 	function storeData($id, $data) {
 		global $con;
-		$result = mysql_query("INSERT INTO gcm_data(id, data) VALUES($id, '$data')");
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
