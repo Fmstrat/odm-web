@@ -7,7 +7,7 @@
 	include 'include/checklogin.php';
 
 	$no_of_users = 0;
-	$users = getAllUsers();
+	$users = getAllUsers($_COOKIE['user_id']);
 	foreach ($users as $row) {
 		$no_of_users++;
 	}

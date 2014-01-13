@@ -10,16 +10,37 @@
 		$password = "";
 		if (isset($_POST["username"])) $username = $_POST["username"];
 		if (isset($_POST["password"])) $password = $_POST["password"];
-		$user = getUserRecord($username);
-		if (crypt($password, $user['hash']) == $user['hash']) {
-			setcookie("user_id", $user['user_id']);
-			setcookie("username", $username);
-			setcookie("hash", $user['hash']);
-			setcookie("token", $user['token']);
-			header("Location: index.php");
-			exit;
-		} else
-			$error = "Username and password do not match.";
+		if ($LDAP) {
+			$ldapuser = $username;
+			if ($LDAP_DOMAIN != "")
+				$ldapuser = $LDAP_DOMAIN."\\".$username;
+			$ldap = ldap_connect($LDAP_SERVER);
+			if ($bind = ldap_bind($ldap, $ldapuser, $password)) {
+				$cost = 10;
+				$salt = strtr(base64_encode(mcrypt_create_iv(16, MCRYPT_DEV_URANDOM)), '+', '.');
+				$salt = sprintf("$2a$%02d$", $cost) . $salt;
+				$hash = crypt($password, $salt);
+				$token = storeUsername($username, $hash);
+                        	$user = getUserRecord($username);
+                        	setcookie("user_id", $user['user_id']);
+                        	setcookie("username", $username);
+                        	setcookie("token", $token);
+                        	header("Location: index.php");
+				exit;
+			} else {
+				$error = "Username and password do not match.";
+			}
+		} else {
+			$user = getUserRecord($username);
+			if (crypt($password, $user['hash']) == $user['hash']) {
+				setcookie("user_id", $user['user_id']);
+				setcookie("username", $username);
+				setcookie("token", $user['token']);
+				header("Location: index.php");
+				exit;
+			} else
+				$error = "Username and password do not match.";
+		}
 	}
 
 	include 'include/header.php';

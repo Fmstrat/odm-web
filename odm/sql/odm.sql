@@ -75,7 +75,6 @@ CREATE TABLE `gcm_users` (
   `user_id` int(11) DEFAULT NULL,
   `gcm_regid` text,
   `name` varchar(50) NOT NULL,
-  `enckey` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=latin1;
@@ -101,6 +100,7 @@ CREATE TABLE `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `hash` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;

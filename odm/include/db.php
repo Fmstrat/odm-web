@@ -56,10 +56,10 @@
 		$stmt->execute(array($id, $data));
 	}
 
-	function getAllUsers() {
+	function getAllUsers($user_id) {
 		global $con;
-		$stmt = $con->prepare("select gu.*, u.token FROM gcm_users gu, users u where gu.user_id = u.user_id order by gu.name, gu.created_at;");
-		$stmt->execute();
+		$stmt = $con->prepare("select gu.*, u.token FROM gcm_users gu, users u where gu.user_id = u.user_id and u.user_id = ? order by gu.name, gu.created_at;");
+		$stmt->execute(array($user_id));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $rows;
 	}
@@ -107,7 +107,10 @@
 		$stmt->execute(array($username));
 		$check_rows = $stmt->rowCount();
 		if ($check_rows > 0) {
-			return "";
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			foreach ($rows as $row) {
+				return $row['token'];
+			}
 		} else {
 			$token = generateRandomString();
 			$stmt = $con->prepare("INSERT INTO users(username, hash, token, created_at) VALUES(?, ?, ?, NOW())");

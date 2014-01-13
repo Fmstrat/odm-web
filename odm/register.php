@@ -31,7 +31,6 @@
 			$user_id = $user['user_id'];
 			setcookie("user_id", $user_id);
 			setcookie("username", $username);
-			setcookie("hash", $hash);
 			setcookie("token", $token);
 			header("Location: index.php");
 			exit;
