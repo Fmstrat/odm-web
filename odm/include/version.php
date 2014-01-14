@@ -1,5 +1,1 @@
-<?php
-
-	$version = 1;
-
-?>
+<?php $version = 1; ?>
