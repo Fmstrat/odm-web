@@ -101,6 +101,12 @@
 						<script type="text/javascript">
 							var regId = "<?php echo $first_gcm_regid; ?>";
 							var token = "<?php echo $first_token; ?>";
+							<?php
+								if ($CHECK_FOR_NEW_VERSIONS)
+									echo 'var check_for_new_versions = true;';
+								else
+									echo 'var check_for_new_versions = false;';
+							?>
 						</script>
 						<div class="status-area" id="curlocation-container"></div>
 						<div class="detail-group">

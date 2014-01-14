@@ -110,8 +110,18 @@
 		return Math.floor(days);
 	}
 
+	function checkUpdate() {
+		$.get("checkversion.php", function(data) {
+			if (data == "true") {
+				alert('There is a new version of ODM-Web available. Download from: https://github.com/Fmstrat/odm-web/archive/master.zip');
+			}
+		});
+	}
+
 	function init() {
 		loadMessages();
+		if (check_for_new_versions)
+			checkUpdate();
 	}
 
 	function loadMessages() {

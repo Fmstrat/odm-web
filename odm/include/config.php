@@ -21,6 +21,11 @@
 	$ALLOW_REGISTRATIONS = false;
 
 	/*
+	 * Check for new versions at login?
+	 */
+	$CHECK_FOR_NEW_VERSIONS = true;
+
+	/*
 	 * Google API Key
 	 * (No need to modify this)
 	 */
