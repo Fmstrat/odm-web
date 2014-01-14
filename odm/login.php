@@ -84,5 +84,3 @@
 	include 'include/footer.php';
 	dbclose();
 ?>
-
-</html>
