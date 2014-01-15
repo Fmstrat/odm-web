@@ -192,6 +192,33 @@
 		font-size: 24px;
 		font-weight: 300;
 	}
+	
+	.new-device {
+	  font-size:18px;
+	}
+	
+	.new-device img {
+	  display:block;
+	}
+	
+	#new-device{
+	  display: none;
+    left: 435px;
+    padding: 20px;
+    position: absolute;
+    width: 125px;
+    font-size: 18px;
+    
+    /*Same box style as #devices-container*/
+    -moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		border-radius: 2px;
+		-moz-box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
+		-ms-box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
+		-webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
+		box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
+		background-color: #fff;
+	}
 
 	iframe {
 		display: block; 
@@ -256,6 +283,38 @@
 		vertical-align: middle;
 		cursor: pointer;
 		z-index: 2;
+	}
+	
+	.button{
+		min-width: 0;
+		-moz-border-radius: 2px;
+		-webkit-border-radius: 2px;
+		border-radius: 2px;
+		-moz-box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+		-ms-box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+		-webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+		box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		-webkit-transition: all .2s;
+		-moz-transition: all .2s;
+		-o-transition: all .2s;
+		transition: all .2s;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		background-color: #fff;
+		border: 1px solid rgba(0,0,0,0.17);
+		color: #737373;
+		cursor: pointer;
+		display: inline-block;
+		font: normal 500 14px "Roboto",serif;
+		line-height: 37px;
+		min-width: 40px;
+		padding: 0 20px;
+		text-decoration: none;
+		white-space: nowrap;
 	}
 
 	#command-dropdown {

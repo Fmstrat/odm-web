@@ -19,6 +19,11 @@
 ?>
 
 	<div class="content-overlay-box">
+	  <div id="new-device">
+	    Add new device
+	    <img src="images/qrcode-latest-apk.png" alt="qrcode latset apk">
+	    <div class="button" onclick="toggleNewDevice()">Done</div>
+	  </div>
 		<div id="devices-container">
 			<?php
 				if ($no_of_users > 0) {
@@ -48,6 +53,13 @@
 						$dropdown .= '</div>';
 						$count++;
 					}
+					
+					//Dropdown entry for adding new device
+					$dropdown .= '<div class="device-summary" onclick="toggleNewDevice()">';
+					$dropdown .= '	<div class="summary-text">';
+					$dropdown .= '		<div class="device-registered">Add new device</div>';
+					$dropdown .= '	</div>';
+					$dropdown .= '</div>';
 							
 			?>
 			<div>
@@ -130,7 +142,13 @@
 			<?php
 				} else {
 			?>
-			<div class="no-devices">No devices registered.</div>
+			<div class="no-devices">
+			  No devices registered.
+			  <div class="new-device">
+			    Add your first device
+			    <img src="images/qrcode-latest-apk.png" alt="qrcode latset apk">
+			  </div>
+			</div>
 			<?php
 				}
 			?>
@@ -138,7 +156,6 @@
 	</div>
 	<div id="button" onclick="toggleCommands()"></div>
 	<div id="img-container"></div>
-
 <?php
 	include 'include/footer.php';
 	dbclose();
