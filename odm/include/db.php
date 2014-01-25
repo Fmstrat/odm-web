@@ -202,5 +202,20 @@
 			$stmt = $con->prepare($sql);
 			$stmt->execute();
 		}
+		// Expand the data field for larger submissions
+		$sql = "show columns from gcm_data like 'data'";
+		$stmt = $con->prepare($sql);
+		$stmt->execute();
+		$check_rows = $stmt->rowCount();
+		if ($check_rows != 0) {
+			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			foreach ($rows as $row) {
+				if ($row['Type'] == "blob") {
+					$sql = "alter table gcm_data modify column data longblob not null;";
+					$stmt = $con->prepare($sql);
+					$stmt->execute();
+				}
+			}
+		}
 	}
 ?>

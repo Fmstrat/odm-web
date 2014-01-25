@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `gcm_data`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gcm_data` (
   `id` int(11) NOT NULL,
-  `data` blob NOT NULL
+  `data` longblob NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
