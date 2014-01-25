@@ -209,16 +209,24 @@
 		document.getElementById("log-contents").innerHTML = log;
 	}
 
+	var curImg = 0;
 	function showImg(i) {
 		var h = $(window).height();
 		var w = $(window).width();
-		var url = 'img.php?w='+(w-300)+'&h='+(h-150)+'&id=' + messages[i].id;
+		curImg = messages[i].id;
+		var url = 'img.php?w='+(w-300)+'&h='+(h-150)+'&id=' + curImg;
 		$.get(url, gotImg);
 	}
 
 	function gotImg(data) {
-		document.getElementById('img-container').innerHTML = "<div class='img-display' onclick='hideImg()'>Click to close</div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
+		document.getElementById('img-container').innerHTML = "<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
 		document.getElementById('img-container').style.visibility = 'visible';
+	}
+
+	function fullscreenImg() {
+		var url = 'img.php?w=10000&h=10000&id=' + curImg;
+		var win = window.open(url, '_blank');
+		win.focus();
 	}
 
 	function hideImg() {
