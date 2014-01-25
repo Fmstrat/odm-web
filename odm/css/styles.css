@@ -77,6 +77,21 @@
 		width: 250px;
 	}
 
+	.login-title {
+		display: table-cell;
+		width: 90px;
+	}
+
+	.login-long-title {
+		display: table-cell;
+		width: 150px;
+	}
+
+
+	.login-field {
+		display: table-cell;
+	}
+
 	.log-area {
 		padding: 10px 15px 0 15px;
 		font-weight: 600;

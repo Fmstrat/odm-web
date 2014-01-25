@@ -70,8 +70,8 @@
 							<div class="error"><?php echo $error; ?><p></div>
 							<?php } ?>
 							<form method="POST">
-							Username: <input type="text" name="username" width=20><br>
-							Password: <input type="password" name="password" width=20><p>
+							<div class="login-title">Username:&nbsp;</div><div class="login-field"><input type="text" name="username" style="width:150px"></div><br>
+							<div class="login-title">Password:&nbsp;</div><div class="login-field"><input type="password" name="password" style="width:150px"></div><p>
 							<input type="submit" name="submit" value="Login">
 							</form>
 						</div>
