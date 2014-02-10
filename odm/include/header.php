@@ -12,6 +12,7 @@
 			<div class="header-link">
 				<?php if (isset($_COOKIE['user_id'])) { ?>
 					<a href="logout.php">Logout</a> | 
+					<a href="changepassword.php">Change Password</a> | 
 				<?php } ?>
 				<a href="http://nowsci.com/odm" target="_new">http://nowsci.com/odm</a>
 			</div>

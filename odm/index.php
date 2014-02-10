@@ -68,6 +68,7 @@
 				<div class="device-summary">
 					<div class="summary-text">
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:GetLocation')">Get location</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:GetLocationGPS')">Get location (GPS only)</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:Lock')">Lock device</div>
 						<div class="command-list" onclick="sendLockPass('<?php echo $first_gcm_regid; ?>')">Lock device with password</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearPhoto')">Take rear photo</div>

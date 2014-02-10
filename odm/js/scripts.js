@@ -47,7 +47,7 @@
 	function sendPushNotification(regId, message) {
 		toggleCommands();
 		$.post( "send_message.php", { token: token, regId: regId, message: message } );
-		if (message == "Command:GetLocation" || message == "Command:FrontPhoto" || message == "Command:RearPhoto") {
+		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto") {
 			waitingForResponse();
 		} else {
 			document.getElementById('command-sent-dropdown').style.visibility = 'visible';

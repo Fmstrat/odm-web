@@ -99,6 +99,14 @@
 		}
 		return $matchrow;
 	}
+
+	function updatePassword($username, $hash) {
+		global $con;
+		$token = generateRandomString();
+		$stmt = $con->prepare("update users set hash = ?, token = ? where username = ?");
+		$stmt->execute(array($hash, $token, $username));
+		return $token;
+	}
  
 	function storeUsername($username, $hash) {
 		global $con;
