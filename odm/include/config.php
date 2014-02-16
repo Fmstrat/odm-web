@@ -5,7 +5,7 @@
 	 */
 	$DB_HOST = "localhost";
 	$DB_USER = "root";
-	$DB_PASSWORD = "";
+	$DB_PASSWORD = "root";
 	$DB_DATABASE = "odm";
 
 	/*
@@ -18,7 +18,7 @@
 	/*
 	 * Allow new user registration?
 	 */
-	$ALLOW_REGISTRATIONS = false;
+	$ALLOW_REGISTRATIONS = true;
 
 	/*
 	 * Check for new versions at login?

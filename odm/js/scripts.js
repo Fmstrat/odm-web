@@ -285,3 +285,9 @@
 	function cancelWait() {
 		toggleWait();
 	}
+	
+	function toggleNewDevice(){
+	  if(devvis)
+      toggleDevices();
+	  $('#new-device').toggle();
+	}
