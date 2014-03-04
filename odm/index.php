@@ -1,145 +1,114 @@
 <?php
-	include 'include/config.php';
-	include 'include/db.php';
-	dbconnect();
-	checkDatabase();
-
-	include 'include/checklogin.php';
-
-	$no_of_users = 0;
-	$users = getAllUsers($_COOKIE['user_id']);
-	foreach ($users as $row) {
-		$no_of_users++;
-	}
-
-	if (isset($_GET['id']))
-		$id = $_GET['id'];
-
-	include 'include/header.php';
+include("include/core.php");
 ?>
-
-	<div class="content-overlay-box">
-		<div id="devices-container">
-			<?php
-				if ($no_of_users > 0) {
-					$count = 0;
-					$dropdown = "";
-					$first_name = "";
-					$first_gcm_regid = "";
-					$first_created_at = "";
-					$first_id = 0;
-					foreach ($users as $row) {
-						$phpdate = strtotime($row['created_at']);
-						$formated_created_at = date( 'm/d/Y', $phpdate );
-						if (($count == 0 && !isset($id)) || (isset($id) && $id == $row['id'])) {
-							$first_name = $row['name'];
-							$first_gcm_regid = $row['gcm_regid'];
-							$first_created_at = $formated_created_at;
-							$first_token = $row['token'];
-							$first_id = $row['id'];
-							$dropdown .= '<div class="device-summary selected-tab" onclick="selectDevice(\''.$row['id'].'\')">';
-						} else {
-							$dropdown .= '<div class="device-summary" onclick="selectDevice(\''.$row['id'].'\')">';
-						}
-						$dropdown .= '	<div class="summary-text">';
-						$dropdown .= '		<div class="device-name" title="Test">'.$row['name'].'</div>';
-						$dropdown .= '		<div class="device-registered">Registered: '.$formated_created_at.'</div>';
-						$dropdown .= '	</div>';
-						$dropdown .= '</div>';
-						$count++;
-					}
-							
-			?>
-			<div>
-				<div class="header-summary">
-					<div class="device-left-info" onclick="toggleDevices()">
-						<div class="summary-text">
-							<div class="device-name" title="<?php echo $first_name ?>"><?php echo $first_name ?></div>
-							<div class="device-registered">Registered: <?php echo $first_created_at ?></div>
-						</div>
-						<div class="down-arrow"><!-- --></div>
-					</div>
-				</div>
-			</div>
-			<div id="device-dropdown">
-				<?php echo $dropdown; ?>
-			</div>
-			<div id="command-dropdown">
-				<div class="device-summary">
-					<div class="summary-text">
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:GetLocation')">Get location</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:GetLocationGPS')">Get location (GPS only)</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:Lock')">Lock device</div>
-						<div class="command-list" onclick="sendLockPass('<?php echo $first_gcm_regid; ?>')">Lock device with password</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearPhoto')">Take rear photo</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontPhoto')">Take front photo</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StartRing')">Start Ring</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StopRing')">Stop Ring</div>
-						<div class="command-list" onclick="sendSMS('<?php echo $first_gcm_regid; ?>')">Receive SMS</div>
-						<div class="command-list" onclick="sendWipe('<?php echo $first_gcm_regid; ?>')">Wipe device</div>
-						<div class="command-list" onclick="sendNotification('<?php echo $first_gcm_regid; ?>')">Send notification</div>
-						<div class="command-list" onclick="deleteDevice(<?php echo $first_id; ?>)">Delete this device</div>
-					</div>
-				</div>
-			</div>
-			<div id="command-sent-dropdown">
-				<div class="device-summary">
-					<div class="summary-text">
-						<div class="command-sent">Command Sent</div>
-					</div>
-				</div>
-			</div>
-			<div id="command-wait-dropdown">
-				<div class="device-summary">
-					<div class="summary-text" onclick="cancelWait()">
-						<div class="loading"></div><div class="wait-list">Waiting for response...<br><div class="wait-list-small">Click to cancel</div></div>
-					</div>
-				</div>
-			</div>
-			<div class="visible-device-details">
-				<div class="details-container">
-					<div class="details">
-						<script type="text/javascript">
-							var regId = "<?php echo $first_gcm_regid; ?>";
-							var token = "<?php echo $first_token; ?>";
-							<?php
-								if ($CHECK_FOR_NEW_VERSIONS)
-									echo 'var check_for_new_versions = true;';
-								else
-									echo 'var check_for_new_versions = false;';
-							?>
-						</script>
-						<div class="status-area" id="curlocation-container"></div>
-						<div class="detail-group">
-							<div class="detail-contents" id="curlocation_mapped-container"></div>
-						</div>
-						<div class="log-area">
-							Log Entries
-						</div>
-						<div class="log-entries">
-							<div id="log-contents"></div>
-						</div>
-						<!--
-						<div class="device-button-container">
-							Reserved for Buttons
-						</div>
-						-->
-					</div>
-				</div>
-			<div>
-			<?php
-				} else {
-			?>
-			<div class="no-devices">No devices registered.</div>
-			<?php
-				}
-			?>
-		</div>
-	</div>
-	<div id="button" onclick="toggleCommands()"></div>
-	<div id="img-container"></div>
-
-<?php
-	include 'include/footer.php';
-	dbclose();
-?>
+<!DOCTYPE html>
+<html data-wf-site="sdm_index">
+<head>
+  <meta charset="utf-8">
+  <title><?php echo _("title");?></title>
+  <meta name="description" content="<?php echo _("index_meta_description");?>">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/webflow.css">
+  <link rel="stylesheet" type="text/css" href="css/sprinternet-device-manager.webflow.css">
+  <script src="js/webfont.js"></script>
+  <script>
+    WebFont.load({
+      google: {
+        families: ["Bitter:400,700","Montserrat:400,700"]
+      }
+    });
+  </script>
+  <script>
+    if (/mobile/i.test(navigator.userAgent)) document.documentElement.className += ' w-mobile';
+  </script>
+  <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+  <!--[if lt IE 9]><script src="js/html5shiv.min.js"></script><![endif]-->
+</head>
+<body>
+  <div class="w-container header">
+    <div class="w-nav sdm_navbar" data-collapse="medium" data-animation="default" data-duration="400" data-contain="1">
+      <div class="w-container">
+        <a class="w-nav-brand sdm_brand" href="#"></a>
+        <nav class="w-nav-menu" role="navigation">
+			<a class="w-nav-link sdm_navlink" href="index.php"><?php echo _("btn_home"); ?></a>
+			<a class="w-nav-link sdm_navlink" href="about.php"><?php echo _("btn_about"); ?></a>
+			<?php if (isset($_SESSION['user_id'])) { ?>
+				<a class="w-nav-link sdm_navlink" href="odm.php?p=main"><?php echo _("btn_devman"); ?></a>
+				<a class="w-nav-link sdm_navlink" href="odm.php?p=changepassword"><?php echo _("btn_changepassword"); ?></a>
+				<a class="w-nav-link sdm_navlink" href="ajax/connector.php?cmd=logout"><?php echo _("btn_logout"); ?></a>
+			<?php } else { ?>	
+				<a class="w-nav-link sdm_navlink" href="odm.php?p=main"><?php echo _("btn_login"); ?></a>
+			<?php } ?>	
+        </nav>
+        <div class="w-nav-button">
+          <div class="w-icon-nav-menu"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="jumbo">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6"></div>
+        <div class="w-col w-col-6">
+          <h1><br><?php echo _("index_headline"); ?></h1>
+          <div class="subtitle"><?php echo _("index_description");?></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="testimonials">
+    <div class="w-container">
+      <div class="quote"><?php echo _("based_on_opensource"); ?></div>
+    </div>
+  </div>
+  <div class="w-container content">
+    <div class="w-row">
+      <div class="w-col w-col-3">
+        <h2><?php echo _("index_app"); ?></h2>
+        <a target="_blank" href="<?php echo $GOOGLE_PLAY_STORE;?>"><img class="sdm_appstore_icon" src="images/google_play_icon.png" alt="SDM in google play"></a>
+		<img class="sdm_appstore_icon" src="ajax/connector.php?cmd=qrcode" style="margin-left:-13px;" alt="QR Code for SDM App">
+      </div>
+      <div class="w-col w-col-3"></div>
+      <div class="w-col w-col-6">
+		<?php if (!isset($_COOKIE['user_id'])) { ?>
+        <div class="w-form wrapper">
+          <form name="register" data-name="register">
+            <h3 class="call-to-action"><?php echo _("index_register_now");?></h3>
+            <div class="note"><?php echo _("index_free_registration");?></div>
+            <input class="w-input" type="text" placeholder="<?php echo _("username");?>" name="username" data-name="username" required="required" autofocus="autofocus"></input>
+            <input class="w-input" type="email" placeholder="<?php echo _("email");?>" name="email" data-name="email" required="required"></input>
+            <input class="w-input" type="password" placeholder="<?php echo _("password");?>" name="password" data-name="password" required="required"></input>
+            <input class="w-input" type="password" placeholder="<?php echo _("password2");?>" name="password2" required="required" data-name="password2"></input>
+            <input class="w-button button" type="submit" value="<?php echo _("register");?>" data-wait="<?php echo _("please_wait");?>"></input>
+            <div class="note share"><?php echo _("index_privacy_note");?></div>
+          </form>
+          <div class="w-form-done">
+            <p><?php echo _("index_reg_success");?></p>
+          </div>
+          <div class="w-form-fail">
+            <p><?php echo _("index_reg_failure");?></p>
+          </div>
+        </div>
+		<?php } ?>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6">
+          <div class="copyright">© 2014 Sprinternet.at</div>
+        </div>
+        <div class="w-col w-col-6">
+          <div class="copyright info"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/webflow.js"></script>
+</body>
+</html>

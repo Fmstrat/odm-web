@@ -1,34 +1,35 @@
 <?php
+/**
+ * Database config variables
+ */
+global $DB_HOST; $DB_HOST = "localhost";
+global $DB_USER; $DB_USER = "username";
+global $DB_PASSWORD; $DB_PASSWORD = "SecretPW";
+global $DB_DATABASE; $DB_DATABASE = "mydatabase";
 
-	/**
-	 * Database config variables
-	 */
-	$DB_HOST = "localhost";
-	$DB_USER = "root";
-	$DB_PASSWORD = "";
-	$DB_DATABASE = "odm";
+/*
+ * Allow new user registration?
+ */
+global $ALLOW_REGISTRATIONS; $ALLOW_REGISTRATIONS = true;
 
-	/*
-	 * LDAP configuration
-	 */
-	$LDAP = false;
-	$LDAP_DOMAIN = "";
-	$LDAP_SERVER = "";
+/*
+ * Absolute directory on the server without trailing slash
+ */
+global $APP_BASE_PATH; $APP_BASE_PATH = "/var/www/vhosts/example.com/httpdocs/odm";
 
-	/*
-	 * Allow new user registration?
-	 */
-	$ALLOW_REGISTRATIONS = false;
+/*
+ * Web subdirectory without trailing slash
+ */
+global $WEB_BASE_PATH; $WEB_BASE_PATH = "/odm";
 
-	/*
-	 * Check for new versions at login?
-	 */
-	$CHECK_FOR_NEW_VERSIONS = true;
+/*
+ * Google API Key
+ * (No need to modify this)
+ */
+global $GOOGLE_API_KEY; $GOOGLE_API_KEY = "AIzaSyDsDnQDzeemwozaPgGbNW99qL2Ag7ySKsM";
 
-	/*
-	 * Google API Key
-	 * (No need to modify this)
-	 */
-	$GOOGLE_API_KEY = "AIzaSyA-3S_tjBnTDuplbqFPulEtVtoaPJGJmVc";
-
+/*
+ * Path to PlayStore App
+ */
+global $GOOGLE_PLAY_STORE; $GOOGLE_PLAY_STORE = "https://play.google.com/store/apps/details?id=at.sprinternet.odm";
 ?>

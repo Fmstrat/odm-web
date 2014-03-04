@@ -1,0 +1,381 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: translation\n"
+"POT-Creation-Date: 2014-03-04 00:58+0100\n"
+"PO-Revision-Date: 2014-03-04 19:18+0100\n"
+"Last-Translator: h44z <christoph.h@sprinternet.at>\n"
+"Language-Team: Sprinternet.at <support@sprinternet.at>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\\..\n"
+
+#: ..\../about.php:10 ..\../include/pageparts/header.php:5 ..\../index.php:8
+msgid "title"
+msgstr "Open Device Manager"
+
+#: ..\../about.php:11 ..\../include/pageparts/header.php:6 ..\../index.php:9
+msgid "index_meta_description"
+msgstr ""
+"Orten Sie ihr Handy nach einem Diebstahl oder löschen Sie remote Ihre "
+"wichtigen Daten, vor sie in falsche Hände geraten."
+
+#: ..\../about.php:36 ..\../include/pageparts/header.php:50 ..\../index.php:35
+msgid "btn_home"
+msgstr "Home"
+
+#: ..\../about.php:37 ..\../index.php:36
+msgid "btn_about"
+msgstr "Über"
+
+#: ..\../about.php:39 ..\../index.php:38
+msgid "btn_devman"
+msgstr "Geräte Manager"
+
+#: ..\../about.php:40 ..\../include/pageparts/header.php:52 ..\../index.php:39
+msgid "btn_changepassword"
+msgstr "Passwort ändern"
+
+#: ..\../about.php:41 ..\../include/pageparts/header.php:53 ..\../index.php:40
+msgid "btn_logout"
+msgstr "Logout"
+
+#: ..\../about.php:43 ..\../include/pageparts/login.php:10 ..\../index.php:42
+msgid "btn_login"
+msgstr "Login"
+
+#: ..\../about.php:54 ..\../index.php:64
+msgid "based_on_opensource"
+msgstr "Basierend auf Open Source Software."
+
+#: ..\../about.php:58
+msgid "about_about"
+msgstr "Über"
+
+#: ..\../about.php:59
+msgid "about_contact"
+msgstr "Kontakt"
+
+#: ..\../about.php:66
+msgid "about_software"
+msgstr "Software"
+
+#: ..\../about.php:67
+msgid "about_software_description"
+msgstr ""
+"Der Open Device Manager basiert auf dem Open Device Manager von <a href="
+"\"http://nowsci.com/odm\">http://nowsci.com/odm</a>.<br/><br/>Der Quellcode "
+"kann von hier heruntergeladen werden: https://github.com/Fmstrat"
+
+#: ..\../include/form_submit.php:21 ..\../include/form_submit.php:65
+msgid "form_username_empty"
+msgstr "Benutzername darf nicht leer sein!"
+
+#: ..\../include/form_submit.php:27 ..\../include/form_submit.php:71
+#: ..\../include/form_submit.php:83 ..\../include/form_submit.php:131
+#: ..\../include/form_submit.php:137 ..\../include/form_submit.php:143
+msgid "form_password_empty"
+msgstr "Passwort darf nicht leer sein!"
+
+#: ..\../include/form_submit.php:43
+msgid "form_login_incorrect"
+msgstr "Benutzername oder Passwort falsch!"
+
+#: ..\../include/form_submit.php:53 ..\../include/pageparts/register.php:5
+msgid "form_no_registration"
+msgstr "Die Anmeldung ist komplett kostenlos!"
+
+#: ..\../include/form_submit.php:77
+msgid "form_email_empty"
+msgstr "Emailadresse darf nicht leer sein!"
+
+#: ..\../include/form_submit.php:91 ..\../include/form_submit.php:151
+msgid "form_password_not_match"
+msgstr "Passwörter stimmen nicht überein."
+
+#: ..\../include/form_submit.php:94
+msgid "form_password_too_long"
+msgstr "Passwort zu lang!"
+
+#: ..\../include/form_submit.php:97
+msgid "form_email_too_long"
+msgstr "Emailadresse zu lang!"
+
+#: ..\../include/form_submit.php:100
+msgid "form_username_exists"
+msgstr "Benutzername ist leider schon vergeben."
+
+#: ..\../include/form_submit.php:114
+msgid "form_usercreate_failed"
+msgstr "Anlegen des Benutzers fehlgeschlagen."
+
+#: ..\../include/form_submit.php:157
+msgid "form_password_wrong"
+msgstr "Passwort falsch."
+
+#: ..\../include/form_submit.php:165
+msgid "form_password_update_failed"
+msgstr "Passwortaktualisierung fehlgeschlagen."
+
+#: ..\../include/pageparts/changepassword.php:4
+#: ..\../include/pageparts/changepassword.php:8
+msgid "changepassword_changepassword"
+msgstr "Passwort ändern"
+
+#: ..\../include/pageparts/changepassword.php:5
+msgid "oldpassword"
+msgstr "Altes Password"
+
+#: ..\../include/pageparts/changepassword.php:6
+#: ..\../include/pageparts/login.php:9 ..\../include/pageparts/register.php:17
+#: ..\../index.php:83
+msgid "password"
+msgstr "Passwort"
+
+#: ..\../include/pageparts/changepassword.php:7
+#: ..\../include/pageparts/register.php:18 ..\../index.php:84
+msgid "password2"
+msgstr "Passwort wiederholen"
+
+#: ..\../include/pageparts/changepassword.php:8
+#: ..\../include/pageparts/login.php:10 ..\../include/pageparts/main.php:117
+#: ..\../include/pageparts/register.php:19 ..\../index.php:85
+msgid "please_wait"
+msgstr "Bitte warten..."
+
+#: ..\../include/pageparts/changepassword.php:9
+msgid "changepassword_update_notice"
+msgstr ""
+"Das Passwort muss anschließend auch auf allen Geräten angepasst werden."
+
+#: ..\../include/pageparts/changepassword.php:12
+msgid "changepassword_success"
+msgstr "Passwort erfolgreich aktualisiert!"
+
+#: ..\../include/pageparts/changepassword.php:15
+msgid "changepassword_failure"
+msgstr "Fehler beim Aktualisieren des Passwortes!"
+
+#: ..\../include/pageparts/header.php:41
+msgid "btn_ok"
+msgstr "OK"
+
+#: ..\../include/pageparts/header.php:42
+msgid "btn_cancel"
+msgstr "Abbrechen"
+
+#: ..\../include/pageparts/login.php:4
+msgid "login_login"
+msgstr "Login"
+
+#: ..\../include/pageparts/login.php:6
+msgid "login_no_account"
+msgstr "Noch keinen Account?"
+
+#: ..\../include/pageparts/login.php:6 ..\../include/pageparts/register.php:13
+#: ..\../index.php:79
+msgid "index_register_now"
+msgstr "Registriere dich jetzt!"
+
+#: ..\../include/pageparts/login.php:8 ..\../include/pageparts/register.php:15
+#: ..\../index.php:81
+msgid "username"
+msgstr "Benutzername"
+
+#: ..\../include/pageparts/login.php:13
+msgid "login_success"
+msgstr "Anmeldung erfolgreich."
+
+#: ..\../include/pageparts/login.php:16
+msgid "login_failure"
+msgstr "Anmeldung fehlgeschlagen."
+
+#: ..\../include/pageparts/main.php:27
+msgid "main_choose_device"
+msgstr "Wähle "
+
+#: ..\../include/pageparts/main.php:28 ..\../include/pageparts/main.php:46
+msgid "main_registered_at"
+msgstr "Registriert am:"
+
+#: ..\../include/pageparts/main.php:37
+msgid "main_add_new_device"
+msgstr "Neues Gerät hinzufügen"
+
+#: ..\../include/pageparts/main.php:44
+msgid "main_choose_a_device"
+msgstr "Wähle ein Gerät"
+
+#: ..\../include/pageparts/main.php:53
+msgid "main_send_a_command"
+msgstr "Sende einen Befehl"
+
+#: ..\../include/pageparts/main.php:58 ..\../include/pageparts/main.php:99
+msgid "main_dev_locate"
+msgstr "Gerät orten"
+
+#: ..\../include/pageparts/main.php:59 ..\../include/pageparts/main.php:100
+msgid "main_dev_locate_gps"
+msgstr "Gerät orten (Nur GPS)"
+
+#: ..\../include/pageparts/main.php:60 ..\../include/pageparts/main.php:101
+msgid "main_dev_lock"
+msgstr "Gerät sperren"
+
+#: ..\../include/pageparts/main.php:61 ..\../include/pageparts/main.php:102
+msgid "main_dev_lock_password"
+msgstr "Gerät mit Passwort sperren"
+
+#: ..\../include/pageparts/main.php:62 ..\../include/pageparts/main.php:103
+msgid "main_dev_photo_rear"
+msgstr "Foto aufnehmen (Rückkamera)"
+
+#: ..\../include/pageparts/main.php:63 ..\../include/pageparts/main.php:104
+msgid "main_dev_photo_front"
+msgstr "Foto aufnehmen (Frontkamera)"
+
+#: ..\../include/pageparts/main.php:64 ..\../include/pageparts/main.php:105
+msgid "main_dev_ring"
+msgstr "Klingeln lassen"
+
+#: ..\../include/pageparts/main.php:65 ..\../include/pageparts/main.php:106
+msgid "main_dev_ring_off"
+msgstr "Klingeln ausschalten"
+
+#: ..\../include/pageparts/main.php:66 ..\../include/pageparts/main.php:107
+msgid "main_dev_sms"
+msgstr "SMS versenden"
+
+#: ..\../include/pageparts/main.php:67 ..\../include/pageparts/main.php:108
+msgid "main_dev_wipe"
+msgstr "Gerät komplett löschen"
+
+#: ..\../include/pageparts/main.php:68 ..\../include/pageparts/main.php:109
+msgid "main_dev_notify"
+msgstr "Benachrichtigung anzeigen"
+
+#: ..\../include/pageparts/main.php:69 ..\../include/pageparts/main.php:110
+msgid "main_dev_info"
+msgstr "Geräteinformationen abrufen"
+
+#: ..\../include/pageparts/main.php:70 ..\../include/pageparts/main.php:111
+msgid "main_dev_audio"
+msgstr "Ton aufnehmen"
+
+#: ..\../include/pageparts/main.php:71 ..\../include/pageparts/main.php:112
+msgid "main_dev_remove"
+msgstr "Gerät aus ODM entfernen"
+
+#: ..\../include/pageparts/main.php:77 ..\../include/pageparts/main.php:120
+msgid "main_command_sent"
+msgstr "Befehl gesendet"
+
+#: ..\../include/pageparts/main.php:84
+msgid "main_timeout"
+msgstr "Zeitüberschreitung (Gerät offline?)"
+
+#: ..\../include/pageparts/main.php:91
+msgid "main_wait_for_response"
+msgstr "Warte auf Antwort..."
+
+#: ..\../include/pageparts/main.php:91
+msgid "main_click_cancel"
+msgstr "Klicken zum Abbrechen"
+
+#: ..\../include/pageparts/main.php:114 ..\../include/pageparts/main.php:115
+msgid "main_enter_message"
+msgstr "Gib eine Nachricht ein"
+
+#: ..\../include/pageparts/main.php:117
+msgid "main_run_cmd"
+msgstr "Befehl gesendet"
+
+#: ..\../include/pageparts/main.php:123
+msgid "main_command_error"
+msgstr "Befehl fehlgeschlagen"
+
+#: ..\../include/pageparts/main.php:132
+msgid "main_position_unknown"
+msgstr "Geräteposition derzeit unbekannt"
+
+#: ..\../include/pageparts/main.php:133
+msgid "main_no_information"
+msgstr "Keine Informationen..."
+
+#: ..\../include/pageparts/main.php:136
+msgid "main_log"
+msgstr "Ereignisanzeige:"
+
+#: ..\../include/pageparts/main.php:139
+msgid "main_no_log"
+msgstr "Keine Logeinträge..."
+
+#: ..\../include/pageparts/main.php:149
+msgid "main_no_devices"
+msgstr "Keine Geräte registriert..."
+
+#: ..\../include/pageparts/main.php:150
+#: ..\../include/pageparts/newdevice.php:3
+msgid "newdev_scan_qr"
+msgstr "Scanne den QR-Code:"
+
+#: ..\../include/pageparts/main.php:152
+#: ..\../include/pageparts/newdevice.php:5
+msgid "newdev_download_app"
+msgstr "Oder lade die App herunter:"
+
+#: ..\../include/pageparts/newdevice.php:2
+msgid "newdev_add_new"
+msgstr "Gerät hinzufügen:"
+
+#: ..\../include/pageparts/newdevice.php:6
+msgid "newdev_done"
+msgstr "Fertig"
+
+#: ..\../include/pageparts/register.php:14 ..\../index.php:80
+msgid "index_free_registration"
+msgstr "Die Anmeldung ist komplett kostenlos!"
+
+#: ..\../include/pageparts/register.php:16 ..\../index.php:82
+msgid "email"
+msgstr "Emailadresse"
+
+#: ..\../include/pageparts/register.php:19 ..\../index.php:85
+msgid "register"
+msgstr "Registrieren"
+
+#: ..\../include/pageparts/register.php:20 ..\../index.php:86
+msgid "index_privacy_note"
+msgstr "Wir geben Ihre Informationen nicht weiter."
+
+#: ..\../include/pageparts/register.php:23 ..\../index.php:89
+msgid "index_reg_success"
+msgstr "Danke, deine Registrierung war erfolgreich!"
+
+#: ..\../include/pageparts/register.php:26 ..\../index.php:92
+msgid "index_reg_failure"
+msgstr "Es gab einen Fehler bei der Registrierung."
+
+#: ..\../index.php:56
+msgid "index_headline"
+msgstr "Mit dem Sprinternet Device Manager finden Sie ihr Smartphone immer!"
+
+#: ..\../index.php:57
+msgid "index_description"
+msgstr ""
+"Orten Sie ihr Handy nach einem Diebstahl oder löschen Sie remote Ihre "
+"wichtigen Daten, vor sie in falsche Hände geraten."
+
+#: ..\../index.php:70
+msgid "index_app"
+msgstr "Die App:"
+
+#~ msgid "index_meta_keywords"
+#~ msgstr ""
+#~ "Sprinternet, Android, Device Manager, stolen, lost, locate, gps, lock, "
+#~ "wipe, secure data, safety"
