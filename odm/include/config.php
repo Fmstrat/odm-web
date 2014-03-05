@@ -26,10 +26,10 @@ global $WEB_BASE_PATH; $WEB_BASE_PATH = "/odm";
  * Google API Key
  * (No need to modify this)
  */
-global $GOOGLE_API_KEY; $GOOGLE_API_KEY = "AIzaSyDsDnQDzeemwozaPgGbNW99qL2Ag7ySKsM";
+global $GOOGLE_API_KEY; $GOOGLE_API_KEY = "AIzaSyA-3S_tjBnTDuplbqFPulEtVtoaPJGJmVc";
 
 /*
  * Path to PlayStore App
  */
-global $GOOGLE_PLAY_STORE; $GOOGLE_PLAY_STORE = "https://play.google.com/store/apps/details?id=at.sprinternet.odm";
+global $GOOGLE_PLAY_STORE; $GOOGLE_PLAY_STORE = "https://github.com/Fmstrat/odm";
 ?>

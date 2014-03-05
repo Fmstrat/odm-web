@@ -1,6 +1,6 @@
 <?php
 class MCrypt {
-	private $iv = 'at.sprinternetiv'; // needs to be 16 bytes
+	private $iv = 'com.nowsci.odmiv'; // needs to be 16 bytes
 
 	function __construct() {
 	}

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="css/normalize.css">
   <link rel="stylesheet" type="text/css" href="css/webflow.css">
-  <link rel="stylesheet" type="text/css" href="css/sprinternet-device-manager.webflow.css">
+  <link rel="stylesheet" type="text/css" href="css/odm.webflow.css">
   <script src="js/webfont.js"></script>
   <script src="js/ajax/misc.js"></script>
   <script src="js/ajax/gui.js"></script>
