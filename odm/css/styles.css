@@ -296,11 +296,11 @@
 
 	.command-list {
 		overflow: hidden;
-		padding: 5px 5px 5px 20px;
+		padding: 3px 3px 3px 20px;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		color: #8d8d8d;
-		font-size: 15px;
+		font-size: 12px;
 	}
 
 	#command-wait-dropdown {
@@ -373,6 +373,16 @@
 		padding: 5px;
 		font-size: 13px;
 	}
+
+	.shell-display {
+		text-align: left;
+		background-color: #fff;
+		padding: 5px;
+		font-size: 13px;
+		overflow-x: auto;
+		overflow-y: auto;
+	}
+
 
 	.header {
 		background-color: #f1f1f1;

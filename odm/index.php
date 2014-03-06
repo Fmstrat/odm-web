@@ -71,13 +71,23 @@
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:GetLocationGPS')">Get location (GPS only)</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:Lock')">Lock device</div>
 						<div class="command-list" onclick="sendLockPass('<?php echo $first_gcm_regid; ?>')">Lock device with password</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearPhoto')">Take rear photo</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontPhoto')">Take front photo</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearPhoto')">Take rear photo (Low res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontPhoto')">Take front photo (Low res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearPhotoMAX')">Take rear photo (High res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontPhotoMAX')">Take front photo (High res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearVideo:15')">Take rear video (Low res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontVideo:15')">Take front video (Low res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearVideoMAX:15')">Take rear video (High res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontVideoMAX:15')">Take front video (High res)</div>
+						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:Audio:15')">Record audio</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StartRing')">Start Ring</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StopRing')">Stop Ring</div>
 						<div class="command-list" onclick="sendSMS('<?php echo $first_gcm_regid; ?>')">Receive SMS</div>
 						<div class="command-list" onclick="sendWipe('<?php echo $first_gcm_regid; ?>')">Wipe device</div>
 						<div class="command-list" onclick="sendNotification('<?php echo $first_gcm_regid; ?>')">Send notification</div>
+						<div class="command-list" onclick="sendShellCmd('<?php echo $first_gcm_regid; ?>')">Send shell command</div>
+						<div class="command-list" onclick="sendFileRequest('<?php echo $first_gcm_regid; ?>')">Request file from device</div>
+						<div class="command-list" onclick="sendFileDownload('<?php echo $first_gcm_regid; ?>')">Download file to device</div>
 						<div class="command-list" onclick="deleteDevice(<?php echo $first_id; ?>)">Delete this device</div>
 					</div>
 				</div>
