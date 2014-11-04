@@ -3,8 +3,12 @@
 	$con = null;
 
 	function dbconnect() {
-		global $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
-		$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		global $DB_ENGINE, $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
+		if ($DB_ENGINE == "postgresql") {
+			$con = new PDO('pgsql:dbname='.$DB_DATABASE.';host='.$DB_HOST, $DB_USER, $DB_PASSWORD);
+		} else {
+			$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		}
 		$con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
@@ -204,12 +208,12 @@
 	function checkDatabase() {
 		global $con;
 		// Database is missing the token field. Add it, and create a token for encryption
-		$sql = "show columns from users like 'token'";
+		$sql = "select column_name from information_schema.columns where table_name='users' and column_name='token';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
 		if ($check_rows == 0) {
-			$sql = "alter table users add token varchar(255) not null after hash;";
+			$sql = "alter table users add token varchar(255) not null;";
 			$stmt = $con->prepare($sql);
 			$stmt->execute();
 			$sql = "select * from users;";
@@ -226,7 +230,7 @@
 			}
 		}
 		// Remove unrequired enckey from gcm_users
-		$sql = "show columns from gcm_users like 'enckey'";
+		$sql = "select column_name from information_schema.columns where table_name='gcm_users' and column_name='enckey';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
@@ -236,7 +240,7 @@
 			$stmt->execute();
 		}
 		// Expand the data field for larger submissions
-		$sql = "show columns from gcm_data like 'data'";
+		$sql = "select data_type from information_schema.columns where table_name='gcm_data' and column_name='data';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
