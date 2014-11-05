@@ -150,7 +150,7 @@
 		$stmt->execute(array($hash, $token, $username));
 		return $token;
 	}
- 
+
 	function storeUsername($username, $hash) {
 		global $con;
 		$stmt = $con->prepare("select * from users where username = ?");
@@ -181,7 +181,7 @@
 	}
 
 	function deleteDevice($id, $user_id) {
-		global $con;
+		global $con, $DB_ENGINE;
 		$sql = "select gcm_regid from gcm_users where id = ? and user_id = ?";
 		$stmt = $con->prepare($sql);
 		$stmt->execute(array($id, $user_id));
@@ -191,7 +191,11 @@
 			$gcm_regid = $row['gcm_regid'];
 		}
 		if ($gcm_regid != '') {
-			$sql = "delete d.* from gcm_data d where d.id in (select m.id from gcm_messages m where m.gcm_regid = ?)";
+			if ($DB_ENGINE == "mysql") {
+				$sql = "delete d.* from gcm_data d where d.id in (select m.id from gcm_messages m where m.gcm_regid = ?)";
+			} else {
+				$sql = "delete from gcm_data as d where d.id in (select id from gcm_messages as m where m.gcm_regid = ?)";
+			}
 			$stmt = $con->prepare($sql);
 			$stmt->execute(array($gcm_regid));
 			$sql = "delete from gcm_messages where gcm_regid = ?";
