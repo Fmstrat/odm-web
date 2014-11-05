@@ -7,8 +7,8 @@
 	$DB_USER = "root";
 	$DB_PASSWORD = "";
 	$DB_DATABASE = "odm";
-	//$DB_DATABASE = "postgresql";
-	$DB_DATABASE = "mysql";
+	//$DB_ENGINE = "postgresql";
+	$DB_ENGINE = "mysql";
 
 	/*
 	 * LDAP configuration

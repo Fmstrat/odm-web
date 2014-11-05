@@ -102,14 +102,18 @@
 	}
 
 	function getImg($user_id, $id) {
-		global $con;
+		global $con, $DB_ENGINE;
 		$img = "";
 		//$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?", array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false));
 		$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?");
 		$stmt->execute(array($user_id, $id));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($rows as $row) {
-			$img .= $row['data'];
+			if ($DB_ENGINE == "mysql") {
+				$img .= $row['data'];
+			} else {
+				$img .= stream_get_contents($row['data']);
+			}
 		}
 		return $img;
 	}
