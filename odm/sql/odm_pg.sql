@@ -31,7 +31,7 @@ DROP TABLE IF EXISTS "gcm_messages";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE "gcm_messages" (
-  "id" INTEGER NOT NULL,
+  "id" SERIAL NOT NULL,
   "gcm_regid" text NOT NULL,
   "message" text NOT NULL,
   "data" INTEGER NOT NULL DEFAULT '0',
@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS "gcm_users";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE "gcm_users" (
-  "id" INTEGER NOT NULL,
+  "id" SERIAL NOT NULL,
   "user_id" INTEGER DEFAULT NULL,
   "gcm_regid" text,
   "name" varchar(50) NOT NULL,
@@ -65,7 +65,7 @@ DROP TABLE IF EXISTS "users";
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE "users" (
-  "user_id" INTEGER NOT NULL,
+  "user_id" SERIAL NOT NULL,
   "username" varchar(50) NOT NULL,
   "hash" varchar(255) NOT NULL,
   "token" varchar(255) NOT NULL,

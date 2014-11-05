@@ -46,17 +46,25 @@
 
 	// Insert message into database
 	function storeMessage($message, $gcm_regid, $data) {
-		global $con;
-		$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW())");
-		$stmt->execute(array($message, $gcm_regid, $data));
-		$id = $con->lastInsertId();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW())");
+			$stmt->execute(array($message, $gcm_regid, $data));
+			$id = $con->lastInsertId();
+		} else {
+			$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW()) RETURNING id");
+			$stmt->execute(array($message, $gcm_regid, $data));
+			$id = $stmt->fetchAll(PDO::FETCH_ASSOC)[0]['id'];
+		}
 		return $id;
 	}
 
 	function storeFile($id, $handle) {
-		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+			$stmt->execute();
+		}
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $handle, PDO::PARAM_LOB);
@@ -64,9 +72,11 @@
 	}
 
 	function storeData($id, $data) {
-		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+			$stmt->execute();
+		}
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
@@ -247,7 +257,7 @@
 		if ($check_rows != 0) {
 			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			foreach ($rows as $row) {
-				if ($row['Type'] == "blob") {
+				if ($row['data_type'] == "blob") {
 					$sql = "alter table gcm_data modify column data longblob not null;";
 					$stmt = $con->prepare($sql);
 					$stmt->execute();
