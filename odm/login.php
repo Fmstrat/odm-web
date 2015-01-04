@@ -21,6 +21,7 @@
 				$salt = sprintf("$2a$%02d$", $cost) . $salt;
 				$hash = crypt($password, $salt);
 				$token = storeUsername($username, $hash);
+				$token = updatePassword($username, $hash);
                         	$user = getUserRecord($username);
                         	setcookie("user_id", $user['user_id']);
                         	setcookie("username", $username);

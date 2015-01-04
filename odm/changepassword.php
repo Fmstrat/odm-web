@@ -6,6 +6,11 @@
 
 	include 'include/checklogin.php';
 
+	if ($LDAP) {
+		header("Location: index.php");
+		exit;
+	}
+
 	$error = "";
 	if (isset($_POST["submit"])) {
 		$password = "";
