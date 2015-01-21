@@ -3,8 +3,12 @@
 	$con = null;
 
 	function dbconnect() {
-		global $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
-		$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		global $DB_ENGINE, $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
+		if ($DB_ENGINE == "postgresql") {
+			$con = new PDO('pgsql:dbname='.$DB_DATABASE.';host='.$DB_HOST, $DB_USER, $DB_PASSWORD);
+		} else {
+			$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		}
 		$con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
@@ -42,17 +46,25 @@
 
 	// Insert message into database
 	function storeMessage($message, $gcm_regid, $data) {
-		global $con;
-		$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW())");
-		$stmt->execute(array($message, $gcm_regid, $data));
-		$id = $con->lastInsertId();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW())");
+			$stmt->execute(array($message, $gcm_regid, $data));
+			$id = $con->lastInsertId();
+		} else {
+			$stmt = $con->prepare("INSERT INTO gcm_messages(message, gcm_regid, data, created_at) VALUES(?, ?, ?, NOW()) RETURNING id");
+			$stmt->execute(array($message, $gcm_regid, $data));
+			$id = $stmt->fetchAll(PDO::FETCH_ASSOC)[0]['id'];
+		}
 		return $id;
 	}
 
 	function storeFile($id, $handle) {
-		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+			$stmt->execute();
+		}
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $handle, PDO::PARAM_LOB);
@@ -60,9 +72,11 @@
 	}
 
 	function storeData($id, $data) {
-		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
+		global $con, $DB_ENGINE;
+		if ($DB_ENGINE == "mysql") {
+			$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
+			$stmt->execute();
+		}
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
@@ -88,14 +102,18 @@
 	}
 
 	function getImg($user_id, $id) {
-		global $con;
+		global $con, $DB_ENGINE;
 		$img = "";
 		//$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?", array(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => false));
 		$stmt = $con->prepare("select d.data from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?");
 		$stmt->execute(array($user_id, $id));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		foreach ($rows as $row) {
-			$img .= $row['data'];
+			if ($DB_ENGINE == "mysql") {
+				$img .= $row['data'];
+			} else {
+				$img .= stream_get_contents($row['data']);
+			}
 		}
 		return $img;
 	}
@@ -132,7 +150,7 @@
 		$stmt->execute(array($hash, $token, $username));
 		return $token;
 	}
- 
+
 	function storeUsername($username, $hash) {
 		global $con;
 		$stmt = $con->prepare("select * from users where username = ?");
@@ -163,7 +181,7 @@
 	}
 
 	function deleteDevice($id, $user_id) {
-		global $con;
+		global $con, $DB_ENGINE;
 		$sql = "select gcm_regid from gcm_users where id = ? and user_id = ?";
 		$stmt = $con->prepare($sql);
 		$stmt->execute(array($id, $user_id));
@@ -173,7 +191,11 @@
 			$gcm_regid = $row['gcm_regid'];
 		}
 		if ($gcm_regid != '') {
-			$sql = "delete d.* from gcm_data d where d.id in (select m.id from gcm_messages m where m.gcm_regid = ?)";
+			if ($DB_ENGINE == "mysql") {
+				$sql = "delete d.* from gcm_data d where d.id in (select m.id from gcm_messages m where m.gcm_regid = ?)";
+			} else {
+				$sql = "delete from gcm_data as d where d.id in (select id from gcm_messages as m where m.gcm_regid = ?)";
+			}
 			$stmt = $con->prepare($sql);
 			$stmt->execute(array($gcm_regid));
 			$sql = "delete from gcm_messages where gcm_regid = ?";
@@ -204,12 +226,12 @@
 	function checkDatabase() {
 		global $con;
 		// Database is missing the token field. Add it, and create a token for encryption
-		$sql = "show columns from users like 'token'";
+		$sql = "select column_name from information_schema.columns where table_name='users' and column_name='token';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
 		if ($check_rows == 0) {
-			$sql = "alter table users add token varchar(255) not null after hash;";
+			$sql = "alter table users add token varchar(255) not null;";
 			$stmt = $con->prepare($sql);
 			$stmt->execute();
 			$sql = "select * from users;";
@@ -226,7 +248,7 @@
 			}
 		}
 		// Remove unrequired enckey from gcm_users
-		$sql = "show columns from gcm_users like 'enckey'";
+		$sql = "select column_name from information_schema.columns where table_name='gcm_users' and column_name='enckey';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
@@ -236,14 +258,14 @@
 			$stmt->execute();
 		}
 		// Expand the data field for larger submissions
-		$sql = "show columns from gcm_data like 'data'";
+		$sql = "select data_type from information_schema.columns where table_name='gcm_data' and column_name='data';";
 		$stmt = $con->prepare($sql);
 		$stmt->execute();
 		$check_rows = $stmt->rowCount();
 		if ($check_rows != 0) {
 			$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			foreach ($rows as $row) {
-				if ($row['Type'] == "blob") {
+				if ($row['data_type'] == "blob") {
 					$sql = "alter table gcm_data modify column data longblob not null;";
 					$stmt = $con->prepare($sql);
 					$stmt->execute();
