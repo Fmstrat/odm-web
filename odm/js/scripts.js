@@ -356,3 +356,10 @@
 	function cancelWait() {
 		toggleWait();
 	}
+	function sendRecordAudio(regId) {
+		var seconds = parseInt(prompt("How many seconds", "60"));
+		if (seconds && seconds > 0) {
+			sendPushNotification(regId, "Command:Audio:"+seconds);
+			waitingForResponse();
+		}
+	}
