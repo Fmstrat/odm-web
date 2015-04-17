@@ -79,7 +79,7 @@
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontVideo:15')">Take front video (Low res)</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:RearVideoMAX:15')">Take rear video (High res)</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:FrontVideoMAX:15')">Take front video (High res)</div>
-						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:Audio:15')">Record audio</div>
+						<div class="command-list" onclick="sendRecordAudio('<?php echo $first_gcm_regid; ?>')">Record audio</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StartRing')">Start Ring</div>
 						<div class="command-list" onclick="sendPushNotification('<?php echo $first_gcm_regid; ?>', 'Command:StopRing')">Stop Ring</div>
 						<div class="command-list" onclick="sendSMS('<?php echo $first_gcm_regid; ?>')">Receive SMS</div>
