@@ -174,7 +174,7 @@
 		min-width: 248px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 	}
 
 	.device-summary:hover, .selected-tab {
@@ -212,7 +212,7 @@
 		float: left;
 	}
 	#button {
-		visibility: hidden;
+		display: none;
 		min-width: 0;
 		padding: 0;
 		background-image: url('../images/send-cmd.png');
@@ -272,7 +272,7 @@
 		min-width: 248px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 		top: 60px;
 		left: 350px;
 	}
@@ -317,7 +317,7 @@
 		min-width: 220px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 		top: 60px;
 		left: 350px;
 	}
@@ -336,7 +336,7 @@
 		min-width: 200px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 		top: 60px;
 		left: 350px;
 	}
@@ -359,7 +359,7 @@
 		-webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
 		box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
 		background-color: #fff;
-		visibility: hidden;
+		display: none;
 		top: 50px;
 		left: 100px;
 		z-index: 3;
