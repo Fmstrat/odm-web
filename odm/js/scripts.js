@@ -74,37 +74,37 @@
 		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto" || message == "Command:FrontPhotoMAX" || message == "Command:RearPhotoMAX" || message == "Command:FrontVideo:15" || message == "Command:RearVideo:15" || message == "Command:FrontVideoMAX:15" || message == "Command:RearVideoMAX:15" || message == "Command:Audio:15") {
 			waitingForResponse();
 		} else {
-      $('#command-sent-dropdown').show();
+			$('#command-sent-dropdown').show();
 			setTimeout( function () { 
-          $('#command-sent-dropdown').hide();
+				$('#command-sent-dropdown').hide();
 				}, 2000 // milliseconds delay
 			);
 		}
 	}
 
-  function toggleDevices() {
-    $('#device-dropdown').toggle();
-  }
+	function toggleDevices() {
+		$('#device-dropdown').toggle();
+	}
 
-  function selectDevice(id) {
-    $('#device-dropdown').hide();
-    window.location.href = "?id="+id;
-  }
+	function selectDevice(id) {
+		$('#device-dropdown').hide();
+		window.location.href = "?id="+id;
+	}
 
-  function toggleCommands() {
-    $('#command-dropdown').toggle();
-  }
+	function toggleCommands() {
+		$('#command-dropdown').toggle();
+	}
 
-  function showMap() {
-    var h = $(window).height();
-    var w = $(window).width();
-    var maphtml = '<iframe id="map_iframe" width="100%" height="'+(h-51)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+iframe_src+'"></iframe>';
-    $('#map_layer').html(maphtml);
-    if (typeof(regId) !== 'undefined') {
-      $('#curlocation-container').html(curlocation);
-      $('#curlocation_mapped-container').html(curlocation_mapped);
-    }
-  }
+	function showMap() {
+		var h = $(window).height();
+		var w = $(window).width();
+		var maphtml = '<iframe id="map_iframe" width="100%" height="'+(h-51)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+iframe_src+'"></iframe>';
+		$('#map_layer').html(maphtml);
+		if (typeof(regId) !== 'undefined') {
+			$('#curlocation-container').html(curlocation);
+			$('#curlocation_mapped-container').html(curlocation_mapped);
+		}
+	}
 
 	function daysBetween(first, second) {
 		// Copy date parts of the timestamps, discarding the time parts.
@@ -138,7 +138,7 @@
 		if (typeof(regId) !== 'undefined') {
 			var url = 'messages.php?n=30&regId=' + regId;
 			$.get(url, gotMessages);
-      $('#button').show();
+			$('#button').show();
 		} else {
 			showMap();
 		}
@@ -218,30 +218,30 @@
 				buildMap(i);
 			}
 		}
-    if (log == "") {
-      log = "No messages received.";
-      showMap();
-    } else if (messages[0].message.substring(0, 4) == "img:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
-      // The first message is an image, so display it
-      showImg(0);
-    } else if (messages[0].message.substring(0, 6) == "shell:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
-      // The first message is an image, so display it
-      showShell(0);
-    } else if (messages[0].message.substring(0, 5) == "file:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
-      // The first message is a file, so display it
-      showFile(0);
-    } else if (messages[0].message.substring(0, 4) == "vid:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
-      // The first message is a video, so display it
-      showFile(0);
-    } else if (messages[0].message.substring(0, 4) == "aud:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
-      // The first message is audio, so display it
-      showFile(0);
-    } else {
-      showMap();
-    }
-    toggleWaitOff();
-    $('#log-contents').html(log);
-  }
+		if (log == "") {
+			log = "No messages received.";
+			showMap();
+		} else if (messages[0].message.substring(0, 4) == "img:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+			// The first message is an image, so display it
+			showImg(0);
+		} else if (messages[0].message.substring(0, 6) == "shell:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+			// The first message is an image, so display it
+			showShell(0);
+		} else if (messages[0].message.substring(0, 5) == "file:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+			// The first message is a file, so display it
+			showFile(0);
+		} else if (messages[0].message.substring(0, 4) == "vid:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+			// The first message is a video, so display it
+			showFile(0);
+		} else if (messages[0].message.substring(0, 4) == "aud:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+			// The first message is audio, so display it
+			showFile(0);
+		} else {
+			showMap();
+		}
+		toggleWaitOff();
+		$('#log-contents').html(log);
+	}
 
 	var curImg = 0;
 	var curData = 0;
@@ -257,8 +257,8 @@
 	}
 
 	function gotImg(data) {
-    $('#img-container').html("<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>");
-    $('#img-container').show();
+		$('#img-container').html("<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>");
+		$('#img-container').show();
 	}
 
 	shell_h = 0;
@@ -272,8 +272,8 @@
 	}
 
 	function gotShell(data) {
-    $('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
-    $('#img-container').show();
+		$('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
+		$('#img-container').show();
 	}
 
 	function showFile(i) {
@@ -287,20 +287,20 @@
 	}
 
 	function hideImg() {
-    $('#img-container').hide();
-    $('#img-container').html('');
+		$('#img-container').hide();
+		$('#img-container').html('');
 	}
 
-  function toggleWait() {
-    $('#command-wait-dropdown').toggle();
-  }
+	function toggleWait() {
+		$('#command-wait-dropdown').toggle();
+	  }
 
-  function toggleWaitOff() {
-    $('#command-wait-dropdown').hide();
-  }
+	function toggleWaitOff() {
+		$('#command-wait-dropdown').hide();
+	  }
 
 	function checkForNewMessage(data) {
-    if ($('#command-wait-dropdown').is(':visible')) {
+		if ($('#command-wait-dropdown').is(':visible')) {
 			if (data && data != "" && data != "[]") {
 				tmpmessages = $.parseJSON(data);
 				if ($.isEmptyObject(messages) || messages[0].created_at != tmpmessages[0].created_at) {
