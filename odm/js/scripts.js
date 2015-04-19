@@ -4,7 +4,7 @@
 
 	function deleteDevice(id) {
 		if (confirm("This will completely remove the device. Are you sure?")) {
-			document.getElementById('device-dropdown').style.visibility = 'hidden';
+			$('#device-dropdown').hide();
 			window.location.href = "delete.php?id="+id;
 		}
 	}
@@ -74,51 +74,37 @@
 		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto" || message == "Command:FrontPhotoMAX" || message == "Command:RearPhotoMAX" || message == "Command:FrontVideo:15" || message == "Command:RearVideo:15" || message == "Command:FrontVideoMAX:15" || message == "Command:RearVideoMAX:15" || message == "Command:Audio:15") {
 			waitingForResponse();
 		} else {
-			document.getElementById('command-sent-dropdown').style.visibility = 'visible';
+      $('#command-sent-dropdown').show();
 			setTimeout( function () { 
-					document.getElementById('command-sent-dropdown').style.visibility = 'hidden';
+          $('#command-sent-dropdown').hide();
 				}, 2000 // milliseconds delay
 			);
 		}
 	}
 
-	devvis = false;
-	function toggleDevices() {
-		if (devvis) {
-			document.getElementById('device-dropdown').style.visibility = 'hidden';
-			devvis = false;
-		} else {
-			document.getElementById('device-dropdown').style.visibility = 'visible';
-			devvis = true;
-		}
-	}
+  function toggleDevices() {
+    $('#device-dropdown').toggle();
+  }
 
-	function selectDevice(id) {
-		document.getElementById('device-dropdown').style.visibility = 'hidden';
-		window.location.href = "?id="+id;
-	}
+  function selectDevice(id) {
+    $('#device-dropdown').hide();
+    window.location.href = "?id="+id;
+  }
 
-	var cmdvis = false;
-	function toggleCommands() {
-		if (cmdvis) {
-			document.getElementById('command-dropdown').style.visibility = 'hidden';
-			cmdvis = false;
-		} else {
-			document.getElementById('command-dropdown').style.visibility = 'visible';
-			cmdvis = true;
-		}
-	}
+  function toggleCommands() {
+    $('#command-dropdown').toggle();
+  }
 
-	function showMap() {
-		var h = $(window).height();
-		var w = $(window).width();
-		var maphtml = '<iframe id="map_iframe" width="100%" height="'+(h-51)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+iframe_src+'"></iframe>';
-		document.getElementById("map_layer").innerHTML = maphtml;
-		if (typeof(regId) !== 'undefined') {
-			document.getElementById("curlocation-container").innerHTML = curlocation;
-			document.getElementById("curlocation_mapped-container").innerHTML = curlocation_mapped;
-		}
-	}
+  function showMap() {
+    var h = $(window).height();
+    var w = $(window).width();
+    var maphtml = '<iframe id="map_iframe" width="100%" height="'+(h-51)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+iframe_src+'"></iframe>';
+    $('#map_layer').html(maphtml);
+    if (typeof(regId) !== 'undefined') {
+      $('#curlocation-container').html(curlocation);
+      $('#curlocation_mapped-container').html(curlocation_mapped);
+    }
+  }
 
 	function daysBetween(first, second) {
 		// Copy date parts of the timestamps, discarding the time parts.
@@ -152,7 +138,7 @@
 		if (typeof(regId) !== 'undefined') {
 			var url = 'messages.php?n=30&regId=' + regId;
 			$.get(url, gotMessages);
-			document.getElementById("button").style.visibility = 'visible';
+      $('#button').show();
 		} else {
 			showMap();
 		}
@@ -232,30 +218,30 @@
 				buildMap(i);
 			}
 		}
-		if (log == "") {
-			log = "No messages received.";
-			showMap();
-		} else if (messages[0].message.substring(0, 4) == "img:" && waitvis) {
-			// The first message is an image, so display it
-			showImg(0);
-		} else if (messages[0].message.substring(0, 6) == "shell:" && waitvis) {
-			// The first message is an image, so display it
-			showShell(0);
-		} else if (messages[0].message.substring(0, 5) == "file:" && waitvis) {
-			// The first message is a file, so display it
-			showFile(0);
-		} else if (messages[0].message.substring(0, 4) == "vid:" && waitvis) {
-			// The first message is a video, so display it
-			showFile(0);
-		} else if (messages[0].message.substring(0, 4) == "aud:" && waitvis) {
-			// The first message is audio, so display it
-			showFile(0);
-		} else {
-			showMap();
-		}
-		toggleWaitOff();
-		document.getElementById("log-contents").innerHTML = log;
-	}
+    if (log == "") {
+      log = "No messages received.";
+      showMap();
+    } else if (messages[0].message.substring(0, 4) == "img:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+      // The first message is an image, so display it
+      showImg(0);
+    } else if (messages[0].message.substring(0, 6) == "shell:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+      // The first message is an image, so display it
+      showShell(0);
+    } else if (messages[0].message.substring(0, 5) == "file:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+      // The first message is a file, so display it
+      showFile(0);
+    } else if (messages[0].message.substring(0, 4) == "vid:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+      // The first message is a video, so display it
+      showFile(0);
+    } else if (messages[0].message.substring(0, 4) == "aud:" && messages[0].data != 0 && $('#command-wait-dropdown').is(':visible')) {
+      // The first message is audio, so display it
+      showFile(0);
+    } else {
+      showMap();
+    }
+    toggleWaitOff();
+    $('#log-contents').html(log);
+  }
 
 	var curImg = 0;
 	var curData = 0;
@@ -271,8 +257,8 @@
 	}
 
 	function gotImg(data) {
-		document.getElementById('img-container').innerHTML = "<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
-		document.getElementById('img-container').style.visibility = 'visible';
+    $('#img-container').html("<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>");
+    $('#img-container').show();
 	}
 
 	shell_h = 0;
@@ -286,8 +272,8 @@
 	}
 
 	function gotShell(data) {
-		document.getElementById('img-container').innerHTML = "<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>";
-		document.getElementById('img-container').style.visibility = 'visible';
+    $('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
+    $('#img-container').show();
 	}
 
 	function showFile(i) {
@@ -301,30 +287,20 @@
 	}
 
 	function hideImg() {
-		document.getElementById('img-container').style.visibility = 'hidden';
-		document.getElementById('img-container').innerHTML = "";
+    $('#img-container').hide();
+    $('#img-container').html('');
 	}
 
-	var waitvis = false;
-	function toggleWait() {
-		if (waitvis) {
-			document.getElementById('command-wait-dropdown').style.visibility = 'hidden';
-			waitvis = false;
-		} else {
-			document.getElementById('command-wait-dropdown').style.visibility = 'visible';
-			waitvis = true;
-		}
-	}
-	
-	function toggleWaitOff() {
-		if (waitvis) {
-			document.getElementById('command-wait-dropdown').style.visibility = 'hidden';
-			waitvis = false;
-		}
-	}
+  function toggleWait() {
+    $('#command-wait-dropdown').toggle();
+  }
+
+  function toggleWaitOff() {
+    $('#command-wait-dropdown').hide();
+  }
 
 	function checkForNewMessage(data) {
-		if (waitvis) {
+    if ($('#command-wait-dropdown').is(':visible')) {
 			if (data && data != "" && data != "[]") {
 				tmpmessages = $.parseJSON(data);
 				if ($.isEmptyObject(messages) || messages[0].created_at != tmpmessages[0].created_at) {
