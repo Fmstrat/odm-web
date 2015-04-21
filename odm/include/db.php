@@ -126,7 +126,7 @@
 
 	function getMessages($gcm_regid, $limit) {
 		global $con;
-		$sql = "select message,created_at,id,data FROM gcm_messages where gcm_regid = ? order by created_at desc";
+		$sql = "select message,created_at,id,data,gcm_regid FROM gcm_messages where gcm_regid = ? order by created_at desc";
 		if (isset($limit)) {
 			$sql .= " limit $limit";
 		}
@@ -138,7 +138,7 @@
 
 	function getMessagesId($gcm_regid, $minid, $limit) {
 		global $con;
-		$sql = "select message,created_at,id,data FROM gcm_messages where gcm_regid = ? and id > ? order by created_at desc";
+		$sql = "select message,created_at,id,data,gcm_regid FROM gcm_messages where gcm_regid = ? and id > ? order by created_at desc";
 		if (isset($limit)) {
 			$sql .= " limit $limit";
 		}
@@ -177,7 +177,7 @@
 		$stmt->execute(array($hash, $token, $username));
 		return $token;
 	}
- 
+
 	function storeUsername($username, $hash) {
 		global $con;
 		$stmt = $con->prepare("select * from users where username = ?");

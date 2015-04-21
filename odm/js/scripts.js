@@ -1,3 +1,14 @@
+	var messages;
+	var curlocation;
+	var curlocation_mapped;
+	var lastMarkId;
+	var lastLat=0;
+	var lastLon=0;
+	var source;
+	var curImg = 0;
+	var curData = 0;
+	var curMessage = 0;
+
 	function deleteDevice(id) {
 		if (confirm("This will completely remove the device. Are you sure?")) {
 			$('#device-dropdown').hide();
@@ -6,7 +17,7 @@
 	}
 
 	function sendShellCmd(regId) {
-		message = prompt("Enter the command.", "");
+		var message = prompt("Enter the command.", "");
 		if (message && message != "") {
 			sendPushNotification(regId, "Command:ShellCmd:"+message.trim());
 		}
@@ -65,22 +76,25 @@
 		$('#command-dropdown').hide();
 		$('#log-contents').html('Send '+message+'<br>'+$('#log-contents').html());
 		$.post( "send_message.php", { token: token, regId: regId, message: message } );
-			$('#command-sent-dropdown').show();
+		$('#command-sent-dropdown').show();
 		setTimeout(
 			function () {
 				$('#command-sent-dropdown').hide();
-				}, 2000 // milliseconds delay
-			);
-		}
+			}, 2000 // milliseconds delay
+		);
+	}
 
 	function toggleDevices() {
 		$('#device-dropdown').toggle();
 	}
 
 	function selectDevice(id) {
+		lastLat=0;
+		lastLon=0;
+		source.close();
 		$('#device-dropdown').hide();
 		loadDevices(id);
-		$('#map_layer').gmap3({clear: { name:["marker", "polyline"] } });
+		$('#map_layer').gmap3({clear: {} });
 	}
 
 	function toggleCommands() {
@@ -120,11 +134,13 @@
 		$.get('devices.php', {id: id},
 			function(data){
 				$('#devices-container').html(data);
+				source = new EventSource('messages_push.php?regId='+regId);
+				source.onmessage = function(e) {
+					gotMessages(e.data)
+				};
 		});
 	}
 
-	var lastLat=0;
-	var lastLon=0;
 	function showMapMarker(id,data,message,createdAt) {
 		var t = createdAt.split(/[- :]/);
 		var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
@@ -150,9 +166,17 @@
 		curlocation_mapped = "Lat:"+coords[1]+" Lng:"+coords[2];
 		$('#curlocation-container').html(curlocation);
 		$('#curlocation_mapped-container').html(curlocation_mapped);
+
+		var lastMarker = $("#map_layer").gmap3({get:"marker"});
+		if(lastMarker)
+			lastMarker.setIcon("images/red_ball.png");
+
 		$('#map_layer').gmap3({
 			marker:{
-				latLng:[coords[1], coords[2]], data: curlocation,
+				latLng:[coords[1], coords[2]],
+				id: "mark_"+id,
+				data: curlocation+' '+id,
+				options: {icon: 'images/blue_ball.png'},
 				events:{
 					mouseover: function(marker, event, context){
 						var map = $(this).gmap3("get"),
@@ -173,11 +197,10 @@
 						var infowindow = $(this).gmap3({get:{name:"infowindow"}});
 						if (infowindow){
 							infowindow.close();
-		}
-	}
+						}
+					}
 				}
-			},
-			autofit:{}
+			}
 		});
 		var lineSymbol = {
 				path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
@@ -204,67 +227,84 @@
 		}
 		lastLat=coords[1];
 		lastLon=coords[2];
-
 	}
 
-	var messages;
-	var curlocation;
-	var curlocation_mapped;
+	function highliteMapMarker(id) {
+		$("#map_layer").gmap3({get:{name:"marker",id: "mark_"+id}}).setIcon("images/green_ball.png");
+	}
+
+	function unHighliteMapMarker(id) {
+		var icon;
+		if(lastMarkId == id) {
+			icon = "images/blue_ball.png";
+		} else {
+			icon = "images/red_ball.png";
+		}
+		$("#map_layer").gmap3({get:{name:"marker",id: "mark_"+id}}).setIcon(icon);
+	}
+
 	function gotMessages(data) {
 		messages = $.parseJSON(data);
-		logline = "";
+		var logline = "";
+		var first = "";
+		var numberAddedIcons = 0;
 		curlocation = "Location Unavailable";
 		curlocation_mapped = "The location of this device has not been mapped.";
 		for (var i = messages.length-1; i >= 0; i--) {
-			logline = "<b>"+messages[i].created_at+":</b> ";
-			if (messages[i].message.substring(0, 10) == "Location: ") {
-				var tmp_link = "<span class='loglink' onclick='showMapMarker("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\",\""+messages[i].created_at+"\")'>Location</span>";
-				logline += messages[i].message.replace("Location",tmp_link);
-				showMapMarker(messages[i].id,messages[i].data,messages[i].message,messages[i].created_at);
-			} else if (messages[i].message.substring(0, 4) == "img:" && messages[i].data != 0) {
-				var tmp_link = "<span class='loglink' onclick='showImg("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Image</span>: ";
-				logline += messages[i].message.replace("img:",tmp_link);
-			} else if (messages[i].message.substring(0, 6) == "shell:" && messages[i].data != 0) {
-				var tmp_link = "<span class='loglink' onclick='showShell("+messages[i].id+")'>Shell</span>: ";
-				logline += messages[i].message.replace("shell:",tmp_link);
-			} else if (messages[i].message.substring(0, 5) == "file:" && messages[i].data != 0) {
-				var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>File</span>: ";
-				logline += messages[i].message.replace("file:",tmp_link);
-			} else if (messages[i].message.substring(0, 4) == "vid:" && messages[i].data != 0) {
-				var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Video</span>: ";
-				logline += messages[i].message.replace("vid:",tmp_link);
-			} else if (messages[i].message.substring(0, 4) == "aud:" && messages[i].data != 0) {
-				var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Audio</span>: ";
-				logline += messages[i].message.replace("aud:",tmp_link);
-			} else {
-				logline += messages[i].message;
+			if (messages[i].gcm_regid == regId) {
+				first=i;
+				logline = "<b>"+messages[i].created_at+":</b> ";
+				if (messages[i].message.substring(0, 10) == "Location: ") {
+					var tmp_link = "<span class='loglink' onMouseOver='highliteMapMarker("+messages[i].id+")' onMouseOut='unHighliteMapMarker("+messages[i].id+")'>Location</span>";
+					logline += messages[i].message.replace("Location",tmp_link);
+					showMapMarker(messages[i].id,messages[i].data,messages[i].message,messages[i].created_at);
+					numberAddedIcons++;
+					lastMarkId = messages[i].id;
+				} else if (messages[i].message.substring(0, 4) == "img:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showImg("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Image</span>: ";
+					logline += messages[i].message.replace("img:",tmp_link);
+				} else if (messages[i].message.substring(0, 6) == "shell:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showShell("+messages[i].id+")'>Shell</span>: ";
+					logline += messages[i].message.replace("shell:",tmp_link);
+				} else if (messages[i].message.substring(0, 5) == "file:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>File</span>: ";
+					logline += messages[i].message.replace("file:",tmp_link);
+				} else if (messages[i].message.substring(0, 4) == "vid:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Video</span>: ";
+					logline += messages[i].message.replace("vid:",tmp_link);
+				} else if (messages[i].message.substring(0, 4) == "aud:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Audio</span>: ";
+					logline += messages[i].message.replace("aud:",tmp_link);
+				} else {
+					logline += messages[i].message;
+				}
+				logline += "<br>";
+				$('#log-contents').html(logline+$('#log-contents').html());
 			}
-			logline += "<br>";
-			$('#log-contents').html(logline+$('#log-contents').html());
 		}
-		if (messages[0].message.substring(0, 10) == "Location: ") {
-			showMapMarker(messages[0].id,messages[0].data,messages[0].message,messages[0].created_at);
-		} else if (messages[0].message.substring(0, 4) == "img:" && messages[0].data != 0) {
+		if (messages[first].message.substring(0, 4) == "img:" && messages[first].data != 0) {
 			// The first message is an image, so display it
-			showImg(messages[0].id,messages[0].data,messages[0].message);
-		} else if (messages[0].message.substring(0, 6) == "shell:" && messages[0].data != 0) {
+			showImg(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 6) == "shell:" && messages[first].data != 0) {
 			// The first message is an image, so display it
-			showShell(messages[0].id);
-		} else if (messages[0].message.substring(0, 5) == "file:" && messages[0].data != 0) {
+			showShell(messages[first].id);
+		} else if (messages[first].message.substring(0, 5) == "file:" && messages[first].data != 0) {
 			// The first message is a file, so display it
-			showFile(messages[0].id,messages[0].data,messages[0].message);
-		} else if (messages[0].message.substring(0, 4) == "vid:" && messages[0].data != 0) {
+			showFile(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 4) == "vid:" && messages[first].data != 0) {
 			// The first message is a video, so display it
-			showFile(messages[0].id,messages[0].data,messages[0].message);
-		} else if (messages[0].message.substring(0, 4) == "aud:" && messages[0].data != 0) {
+			showFile(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 4) == "aud:" && messages[first].data != 0) {
 			// The first message is audio, so display it
-			showFile(messages[0].id,messages[0].data,messages[0].message);
+			showFile(messages[first].id,messages[first].data,messages[first].message);
+		}
+		if(numberAddedIcons>5) {
+			$('#map_layer').gmap3({
+				autofit:{}
+			});
 		}
 	}
 
-	var curImg = 0;
-	var curData = 0;
-	var curMessage = 0;
 	function showImg(id,data,message) {
 		var h = $(window).height();
 		var w = $(window).width();
@@ -283,10 +323,10 @@
 	function showShell(id) {
 		$.get('shell.php', { id: id},
 			function(data){
-		shell_h = $(window).height()-250;
-		shell_w = $(window).width()-300;
-		$('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
-		$('#img-container').show();
+				shell_h = $(window).height()-250;
+				shell_w = $(window).width()-300;
+				$('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
+				$('#img-container').show();
 		});
 	}
 
