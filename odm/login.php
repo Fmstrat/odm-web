@@ -32,15 +32,40 @@
 				$error = "Username and password do not match.";
 			}
 		} else {
-			$user = getUserRecord($username);
-			if (crypt($password, $user['hash']) == $user['hash']) {
-				setcookie("user_id", $user['user_id']);
-				setcookie("username", $username);
-				setcookie("token", $user['token']);
-				header("Location: index.php");
-				exit;
-			} else
-				$error = "Username and password do not match.";
+			if($GOOGLE_RECAPTCHA_ENABLED == true) 
+			{
+				require_once('include/recaptchalib.php');
+				$resp = recaptcha_check_answer ($GOOGLE_RECAPTCHA_PRIVATE_KEY,
+												$_SERVER["REMOTE_ADDR"],
+												$_POST["recaptcha_challenge_field"],
+												$_POST["recaptcha_response_field"]);
+				if (!$resp->is_valid) {
+				// What happens when the CAPTCHA was entered incorrectly
+					$error = "The reCAPTCHA wasn't entered correctly. Go back and try it again.";
+				} else {
+				  // Your code here to handle a successful verification
+					$user = getUserRecord($username);
+					if (crypt($password, $user['hash']) == $user['hash']) {
+						setcookie("user_id", $user['user_id']);
+						setcookie("username", $username);
+						setcookie("token", $user['token']);
+						header("Location: index.php");
+						exit;
+					} else
+						$error = "Username and password do not match.";
+				}  
+			}
+			else {
+				$user = getUserRecord($username);
+				if (crypt($password, $user['hash']) == $user['hash']) {
+					setcookie("user_id", $user['user_id']);
+					setcookie("username", $username);
+					setcookie("token", $user['token']);
+					header("Location: index.php");
+					exit;
+				} else
+					$error = "Username and password do not match.";
+			}
 		}
 	}
 
@@ -73,6 +98,16 @@
 							<form method="POST">
 							<div class="login-title">Username:&nbsp;</div><div class="login-field"><input type="text" name="username" style="width:150px"></div><br>
 							<div class="login-title">Password:&nbsp;</div><div class="login-field"><input type="password" name="password" style="width:150px"></div><p>
+							<?php
+						        if($GOOGLE_RECAPTCHA_ENABLED == true) 
+						        {
+						        ?>
+						        <?php
+						            // Output the Recaptcha HTML content
+						            require_once('include/recaptchalib.php');
+						            echo recaptcha_get_html($GOOGLE_RECAPTCHA_PUBLIC_KEY);
+						        }
+						    	?>							
 							<input type="submit" name="submit" value="Login">
 							</form>
 						</div>
