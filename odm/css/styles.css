@@ -1,7 +1,11 @@
+	html {
+		height: 100%;
+	}
+
 	body {
 		margin: 0;
 		font-family: 'Roboto',arial,sans-serif;
-		display: block;
+		height: 100%;
 	}
 
 	.content-overlay-box {
@@ -51,7 +55,7 @@
 	}
 
 	.details-container {
-		width: 420px;
+		width: 510px;
 	}
 
 	.details {
@@ -105,9 +109,11 @@
 		padding: 1px 15px 1px 15px;
 		margin: 0px 0px 20px 0px;
 		border: 1px solid black;
-		width: 360px;
-		height: 70px;
-		overflow: auto;
+		width: 450px;
+		height: 100px;
+		overflow-x: hidden;
+		overflow-y: auto;
+		white-space: nowrap;
 	}
 
 	.detail-contents {
@@ -174,7 +180,7 @@
 		min-width: 248px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 	}
 
 	.device-summary:hover, .selected-tab {
@@ -194,25 +200,15 @@
 	}
 
 	iframe {
-		display: block; 
-		width: 100%; 
-		border: none; 
-		overflow-y: auto; 
+		display: block;
+		width: 100%;
+		border: none;
+		overflow-y: auto;
 		overflow-x: hidden;
-	} 
-
-	.loading {
-		margin: 0;
-		padding: 0;
-		background-image: url('../images/loading.gif');
-		background-position: center;
-		background-repeat: no-repeat;
-		height: 18px;
-		width: 18px;
-		float: left;
 	}
+
 	#button {
-		visibility: hidden;
+		display: none;
 		min-width: 0;
 		padding: 0;
 		background-image: url('../images/send-cmd.png');
@@ -272,26 +268,9 @@
 		min-width: 248px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 		top: 60px;
 		left: 350px;
-	}
-
-	.wait-list {
-		overflow: hidden;
-		padding-left: 20px;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		color: #737373;
-		font-size: 15px;
-	}
-
-	.wait-list-small {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		color: #737373;
-		font-size: 11px;
 	}
 
 	.command-list {
@@ -301,25 +280,6 @@
 		white-space: nowrap;
 		color: #8d8d8d;
 		font-size: 12px;
-	}
-
-	#command-wait-dropdown {
-		-moz-border-radius: 3px;
-		-webkit-border-radius: 3px;
-		border-radius: 3px;
-		-moz-box-shadow: 0 2px 40px rgba(0,0,0,0.4);
-		-ms-box-shadow: 0 2px 40px rgba(0,0,0,0.4);
-		-webkit-box-shadow: 0 2px 40px rgba(0,0,0,0.4);
-		box-shadow: 0 2px 40px rgba(0,0,0,0.4);
-		background-color: #fff;
-		border: 1px solid #d6d6d6;
-		max-width: 220px;
-		min-width: 220px;
-		position: absolute;
-		z-index: 1;
-		visibility: hidden;
-		top: 60px;
-		left: 350px;
 	}
 
 	#command-sent-dropdown {
@@ -336,7 +296,7 @@
 		min-width: 200px;
 		position: absolute;
 		z-index: 1;
-		visibility: hidden;
+		display: none;
 		top: 60px;
 		left: 350px;
 	}
@@ -359,7 +319,7 @@
 		-webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
 		box-shadow: 0 2px 6px rgba(0,0,0,0.3),0 -3px 8px rgba(0,0,0,0.2);
 		background-color: #fff;
-		visibility: hidden;
+		display: none;
 		top: 50px;
 		left: 100px;
 		z-index: 3;
@@ -420,6 +380,10 @@
 
 	a:active { color: #333; }
 
-	.map_layer {
-		overflow: hidden;
+	#map_layer {
+		height: 93%;
+	}
+	#shell_cmd {
+		width: 98%;
+		height: 17px;
 	}

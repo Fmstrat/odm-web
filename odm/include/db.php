@@ -100,9 +100,33 @@
 		return $img;
 	}
 
+	function getMessage($user_id, $id) {
+		global $con;
+		$message = "";
+		$stmt = $con->prepare("select m.message from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?");
+		$stmt->execute(array($user_id, $id));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($rows as $row) {
+			$message .= $row['message'];
+		}
+		return $message;
+	}
+
+	function getRegID($user_id, $id) {
+		global $con;
+		$regid = "";
+		$stmt = $con->prepare("select m.gcm_regid from gcm_data d, gcm_messages m, gcm_users u where d.id = m.id and m.gcm_regid = u.gcm_regid and u.user_id = ? and d.id = ?");
+		$stmt->execute(array($user_id, $id));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		foreach ($rows as $row) {
+			$regid .= $row['gcm_regid'];
+		}
+		return $regid;
+	}
+
 	function getMessages($gcm_regid, $limit) {
 		global $con;
-		$sql = "select message,created_at,id,data FROM gcm_messages where gcm_regid = ? order by created_at desc";
+		$sql = "select message,created_at,id,data,gcm_regid FROM gcm_messages where gcm_regid = ? order by created_at desc";
 		if (isset($limit)) {
 			$sql .= " limit $limit";
 		}
@@ -110,6 +134,27 @@
 		$stmt->execute(array($gcm_regid));
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		return $rows;
+	}
+
+	function getMessagesId($gcm_regid, $minid, $limit) {
+		global $con;
+		$sql = "select message,created_at,id,data,gcm_regid FROM gcm_messages where gcm_regid = ? and id > ? order by created_at desc";
+		if (isset($limit)) {
+			$sql .= " limit $limit";
+		}
+		$stmt = $con->prepare($sql);
+		$stmt->execute(array($gcm_regid,$minid));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $rows;
+	}
+
+	function getLastMessageID($gcm_regid) {
+		global $con;
+		$sql = "select id FROM gcm_messages where gcm_regid = ? order by created_at desc";
+		$stmt = $con->prepare($sql);
+		$stmt->execute(array($gcm_regid));
+		$currentId = $stmt->fetchColumn();
+		return $currentId;
 	}
 
 	function getUserRecord($username) {
@@ -132,7 +177,7 @@
 		$stmt->execute(array($hash, $token, $username));
 		return $token;
 	}
- 
+
 	function storeUsername($username, $hash) {
 		global $con;
 		$stmt = $con->prepare("select * from users where username = ?");

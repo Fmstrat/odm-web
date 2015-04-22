@@ -1,10 +1,17 @@
-	window.onresize = function(event) {
-		showMap();
-	}
+	var messages;
+	var curlocation;
+	var curlocation_mapped;
+	var lastMarkId;
+	var lastLat=0;
+	var lastLon=0;
+	var source;
+	var curImg = 0;
+	var curData = 0;
+	var curMessage = 0;
 
 	function deleteDevice(id) {
 		if (confirm("This will completely remove the device. Are you sure?")) {
-			document.getElementById('device-dropdown').style.visibility = 'hidden';
+			$('#device-dropdown').hide();
 			window.location.href = "delete.php?id="+id;
 		}
 	}
@@ -12,15 +19,14 @@
 	function sendShellCmd(regId) {
 		var message = prompt("Enter the command.", "");
 		if (message && message != "") {
-			sendPushNotification(regId, "Command:ShellCmd:"+message);
-			waitingForResponse();
+			sendPushNotification(regId, "Command:ShellCmd:"+message.trim());
 		}
 	}
 
 	function sendFileDownload(regId) {
 		var message = prompt("Enter the URL to download.", "");
 		if (message && message != "")
-			sendPushNotification(regId, "Command:GetFile:"+message);
+			sendPushNotification(regId, "Command:GetFile:"+message.trim());
 		else
 			toggleCommands();
 	}
@@ -28,15 +34,14 @@
 	function sendFileRequest(regId) {
 		var message = prompt("Enter the filename.", "");
 		if (message && message != "") {
-			sendPushNotification(regId, "Command:SendFile:"+message);
-			waitingForResponse();
+			sendPushNotification(regId, "Command:SendFile:"+message.trim());
 		}
 	}
 
 	function sendNotification(regId) {
 		var message = prompt("Enter the notification to display.", "");
 		if (message && message != "")
-			sendPushNotification(regId, "Command:Notify:"+message);
+			sendPushNotification(regId, "Command:Notify:"+message.trim());
 		else
 			toggleCommands();
 	}
@@ -53,7 +58,6 @@
 				toggleCommands();
 	}
 
-
 	function sendSMS(regId) {
 		var message = prompt("Enter the phone number to receive the SMS.", "");
 		if (message && message != "")
@@ -69,55 +73,32 @@
 	}
 
 	function sendPushNotification(regId, message) {
-		toggleCommands();
+		$('#command-dropdown').hide();
+		$('#log-contents').html('Send '+message+'<br>'+$('#log-contents').html());
 		$.post( "send_message.php", { token: token, regId: regId, message: message } );
-		if (message == "Command:GetLocation" || message == "Command:GetLocationGPS" || message == "Command:FrontPhoto" || message == "Command:RearPhoto" || message == "Command:FrontPhotoMAX" || message == "Command:RearPhotoMAX" || message == "Command:FrontVideo:15" || message == "Command:RearVideo:15" || message == "Command:FrontVideoMAX:15" || message == "Command:RearVideoMAX:15" || message == "Command:Audio:15") {
-			waitingForResponse();
-		} else {
-			document.getElementById('command-sent-dropdown').style.visibility = 'visible';
-			setTimeout( function () { 
-					document.getElementById('command-sent-dropdown').style.visibility = 'hidden';
-				}, 2000 // milliseconds delay
-			);
-		}
+		$('#command-sent-dropdown').show();
+		setTimeout(
+			function () {
+				$('#command-sent-dropdown').hide();
+			}, 2000 // milliseconds delay
+		);
 	}
 
-	devvis = false;
 	function toggleDevices() {
-		if (devvis) {
-			document.getElementById('device-dropdown').style.visibility = 'hidden';
-			devvis = false;
-		} else {
-			document.getElementById('device-dropdown').style.visibility = 'visible';
-			devvis = true;
-		}
+		$('#device-dropdown').toggle();
 	}
 
 	function selectDevice(id) {
-		document.getElementById('device-dropdown').style.visibility = 'hidden';
-		window.location.href = "?id="+id;
+		lastLat=0;
+		lastLon=0;
+		source.close();
+		$('#device-dropdown').hide();
+		loadDevices(id);
+		$('#map_layer').gmap3({clear: {} });
 	}
 
-	var cmdvis = false;
 	function toggleCommands() {
-		if (cmdvis) {
-			document.getElementById('command-dropdown').style.visibility = 'hidden';
-			cmdvis = false;
-		} else {
-			document.getElementById('command-dropdown').style.visibility = 'visible';
-			cmdvis = true;
-		}
-	}
-
-	function showMap() {
-		var h = $(window).height();
-		var w = $(window).width();
-		var maphtml = '<iframe id="map_iframe" width="100%" height="'+(h-51)+'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+iframe_src+'"></iframe>';
-		document.getElementById("map_layer").innerHTML = maphtml;
-		if (typeof(regId) !== 'undefined') {
-			document.getElementById("curlocation-container").innerHTML = curlocation;
-			document.getElementById("curlocation_mapped-container").innerHTML = curlocation_mapped;
-		}
+		$('#command-dropdown').toggle();
 	}
 
 	function daysBetween(first, second) {
@@ -142,30 +123,26 @@
 		});
 	}
 
-	function init() {
-		loadMessages();
+	function init(id) {
+		loadDevices(id);
+		$('#map_layer').gmap3({map:{ options: { center:[48.62,10.18], zoom: 14 } }});
 		if (check_for_new_versions)
 			checkUpdate();
 	}
 
-	function loadMessages() {
-		if (typeof(regId) !== 'undefined') {
-			var url = 'messages.php?n=30&regId=' + regId;
-			$.get(url, gotMessages);
-			document.getElementById("button").style.visibility = 'visible';
-		} else {
-			showMap();
-		}
+	function loadDevices(id) {
+		$.get('devices.php', {id: id},
+			function(data){
+				$('#devices-container').html(data);
+				source = new EventSource('messages_push.php?regId='+regId);
+				source.onmessage = function(e) {
+					gotMessages(e.data)
+				};
+		});
 	}
 
-	function loadPrevMap(i) {
-		buildMap(i, "Previously");
-	}
-
-	function buildMap(i, s) {
-		if (!s)
-			s = "Last"
-		var t = messages[i].created_at.split(/[- :]/);
+	function showMapMarker(id,data,message,createdAt) {
+		var t = createdAt.split(/[- :]/);
 		var d = new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
 		var today = new Date();
 		var h = d.getHours();
@@ -181,117 +158,180 @@
 		var month = d.getMonth();
 		var year = d.getFullYear();
 		if (daysBetween(d, today) == 0) {
-			curlocation = s+" located <b>today</b> at <b>"+h+":"+m+" "+ap;
+			curlocation = "located <b>today</b> at <b>"+h+":"+m+" "+ap;
 		} else {
-			curlocation = s+" located on <b>"+(month+1)+"/"+day+"/"+year+"</b> at <b>"+h+":"+m+" "+ap;
+			curlocation = "located on <b>"+(month+1)+"/"+day+"/"+year+"</b> at <b>"+h+":"+m+" "+ap;
 		}
-		var coords = messages[i].message.split(" ");
+		var coords = message.split(" ");
 		curlocation_mapped = "Lat:"+coords[1]+" Lng:"+coords[2];
-		// Change t=m to t=h for sattelite
-		var new_iframe_src = "https://maps.google.com/maps?q="+coords[1]+","+coords[2]+"&amp;ie=UTF8&amp;t=m&amp;z=14&amp;ll="+coords[1]+","+coords[2]+"&amp;z=18&amp;output=embed";
-		if (new_iframe_src != iframe_src) {
-			iframe_src = new_iframe_src;
-			showMap();
+		$('#curlocation-container').html(curlocation);
+		$('#curlocation_mapped-container').html(curlocation_mapped);
+
+		var lastMarker = $("#map_layer").gmap3({get:"marker"});
+		if(lastMarker)
+			lastMarker.setIcon("images/red_ball.png");
+
+		$('#map_layer').gmap3({
+			marker:{
+				latLng:[coords[1], coords[2]],
+				id: "mark_"+id,
+				data: curlocation+' '+id,
+				options: {icon: 'images/blue_ball.png'},
+				events:{
+					mouseover: function(marker, event, context){
+						var map = $(this).gmap3("get"),
+							infowindow = $(this).gmap3({get:{name:"infowindow"}});
+						if (infowindow){
+							infowindow.open(map, marker);
+							infowindow.setContent(context.data);
+						} else {
+							$(this).gmap3({
+								infowindow:{
+									anchor:marker,
+									options:{content: context.data}
+								}
+							});
+						}
+					},
+					mouseout: function(){
+						var infowindow = $(this).gmap3({get:{name:"infowindow"}});
+						if (infowindow){
+							infowindow.close();
+						}
+					}
+				}
+			}
+		});
+		var lineSymbol = {
+				path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+			};
+		if(lastLat != 0 && lastLon != 0) {
+			$("#map_layer").gmap3({
+				polyline:{
+					options:{
+						strokeColor: "#FF0000",
+						strokeOpacity: 1.0,
+						strokeWeight: 1,
+						path:[
+							[lastLat, lastLon],
+							[coords[1], coords[2]]
+						],
+						icons: [{
+							icon: lineSymbol,
+							offset: '0%',
+							repeat: '50px'
+						}]
+					}
+				}
+			});
 		}
+		lastLat=coords[1];
+		lastLon=coords[2];
 	}
 
-	var messages;
-	var curlocation;
-	var curlocation_mapped;
+	function highliteMapMarker(id) {
+		$("#map_layer").gmap3({get:{name:"marker",id: "mark_"+id}}).setIcon("images/green_ball.png");
+	}
+
+	function unHighliteMapMarker(id) {
+		var icon;
+		if(lastMarkId == id) {
+			icon = "images/blue_ball.png";
+		} else {
+			icon = "images/red_ball.png";
+		}
+		$("#map_layer").gmap3({get:{name:"marker",id: "mark_"+id}}).setIcon(icon);
+	}
+
 	function gotMessages(data) {
 		messages = $.parseJSON(data);
-		var log = "";
+		var logline = "";
+		var first = "";
+		var numberAddedIcons = 0;
 		curlocation = "Location Unavailable";
 		curlocation_mapped = "The location of this device has not been mapped.";
-		for (var i = 0; i < messages.length; i++) {
-			if (i > 0)
-				log += "<br>";
-			log += "<b>"+messages[i].created_at+":</b> ";
-			if (messages[i].message.substring(0, 10) == "Location: ") {
-				var tmp_link = "<span class='loglink' onclick='loadPrevMap("+i+")'>Location</span>";
-				log += messages[i].message.replace("Location",tmp_link);
-			} else if (messages[i].message.substring(0, 4) == "img:") {
-				var tmp_link = "<span class='loglink' onclick='showImg("+i+")'>Image</span>: ";
-				log += messages[i].message.replace("img:",tmp_link);
-			} else if (messages[i].message.substring(0, 6) == "shell:") {
-				var tmp_link = "<span class='loglink' onclick='showShell("+i+")'>Shell</span>: ";
-				log += messages[i].message.replace("shell:",tmp_link);
-			} else if (messages[i].message.substring(0, 5) == "file:") {
-				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>File</span>: ";
-				log += messages[i].message.replace("file:",tmp_link);
-			} else if (messages[i].message.substring(0, 4) == "vid:") {
-				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>Video</span>: ";
-				log += messages[i].message.replace("vid:",tmp_link);
-			} else if (messages[i].message.substring(0, 4) == "aud:") {
-				var tmp_link = "<span class='loglink' onclick='showFile("+i+")'>Audio</span>: ";
-				log += messages[i].message.replace("aud:",tmp_link);
-			} else {
-				log += messages[i].message;
-			}
-			if (messages[i].message.substring(0, 10) == "Location: " && curlocation == "Location Unavailable") {
-				buildMap(i);
+		for (var i = messages.length-1; i >= 0; i--) {
+			if (messages[i].gcm_regid == regId) {
+				first=i;
+				logline = "<b>"+messages[i].created_at+":</b> ";
+				if (messages[i].message.substring(0, 10) == "Location: ") {
+					var tmp_link = "<span class='loglink' onMouseOver='highliteMapMarker("+messages[i].id+")' onMouseOut='unHighliteMapMarker("+messages[i].id+")'>Location</span>";
+					logline += messages[i].message.replace("Location",tmp_link);
+					showMapMarker(messages[i].id,messages[i].data,messages[i].message,messages[i].created_at);
+					numberAddedIcons++;
+					lastMarkId = messages[i].id;
+				} else if (messages[i].message.substring(0, 4) == "img:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showImg("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Image</span>: ";
+					logline += messages[i].message.replace("img:",tmp_link);
+				} else if (messages[i].message.substring(0, 6) == "shell:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showShell("+messages[i].id+")'>Shell</span>: ";
+					logline += messages[i].message.replace("shell:",tmp_link);
+				} else if (messages[i].message.substring(0, 5) == "file:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>File</span>: ";
+					logline += messages[i].message.replace("file:",tmp_link);
+				} else if (messages[i].message.substring(0, 4) == "vid:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Video</span>: ";
+					logline += messages[i].message.replace("vid:",tmp_link);
+				} else if (messages[i].message.substring(0, 4) == "aud:" && messages[i].data != 0) {
+					var tmp_link = "<span class='loglink' onclick='showFile("+messages[i].id+",\""+messages[i].data+"\",\""+messages[i].message+"\")'>Audio</span>: ";
+					logline += messages[i].message.replace("aud:",tmp_link);
+				} else {
+					logline += messages[i].message;
+				}
+				logline += "<br>";
+				$('#log-contents').html(logline+$('#log-contents').html());
 			}
 		}
-		if (log == "") {
-			log = "No messages received.";
-			showMap();
-		} else if (messages[0].message.substring(0, 4) == "img:" && waitvis) {
+		if (messages[first].message.substring(0, 4) == "img:" && messages[first].data != 0) {
 			// The first message is an image, so display it
-			showImg(0);
-		} else if (messages[0].message.substring(0, 6) == "shell:" && waitvis) {
+			showImg(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 6) == "shell:" && messages[first].data != 0) {
 			// The first message is an image, so display it
-			showShell(0);
-		} else if (messages[0].message.substring(0, 5) == "file:" && waitvis) {
+			showShell(messages[first].id);
+		} else if (messages[first].message.substring(0, 5) == "file:" && messages[first].data != 0) {
 			// The first message is a file, so display it
-			showFile(0);
-		} else if (messages[0].message.substring(0, 4) == "vid:" && waitvis) {
+			showFile(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 4) == "vid:" && messages[first].data != 0) {
 			// The first message is a video, so display it
-			showFile(0);
-		} else if (messages[0].message.substring(0, 4) == "aud:" && waitvis) {
+			showFile(messages[first].id,messages[first].data,messages[first].message);
+		} else if (messages[first].message.substring(0, 4) == "aud:" && messages[first].data != 0) {
 			// The first message is audio, so display it
-			showFile(0);
-		} else {
-			showMap();
+			showFile(messages[first].id,messages[first].data,messages[first].message);
 		}
-		toggleWaitOff();
-		document.getElementById("log-contents").innerHTML = log;
+		if(numberAddedIcons>5) {
+			$('#map_layer').gmap3({
+				autofit:{}
+			});
+		}
 	}
 
-	var curImg = 0;
-	var curData = 0;
-	var downloadImg = 0;
-	function showImg(i) {
+	function showImg(id,data,message) {
 		var h = $(window).height();
 		var w = $(window).width();
-		curImg = messages[i].id;
-		curData = messages[i].data;
-		downloadImg = i;
-		var url = 'img.php?data='+curData+'&w='+(w-300)+'&h='+(h-250)+'&id=' + curImg;
+		curImg = id;
+		curData = data;
+		curMessage = message;
+		var url = 'img.php?data='+data+'&w='+(w-300)+'&h='+(h-250)+'&id=' + id;
 		$.get(url, gotImg);
 	}
 
 	function gotImg(data) {
-		document.getElementById('img-container').innerHTML = "<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |  <span onclick='showFile(downloadImg)'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>";
-		document.getElementById('img-container').style.visibility = 'visible';
+		$('#img-container').html("<div class='img-display'><span onclick='hideImg()'>Click image to close</span> | <span onclick='fullscreenImg()'>Full resolution</span> |	<span onclick='showFile("+curImg+",\""+curData+"\",\""+curMessage+"\")'>Download</span></div><div class='img-display' onclick='hideImg()'</span></div><div class='img-display' onclick='hideImg()'>"+data+"</div>");
+		$('#img-container').show();
 	}
 
-	shell_h = 0;
-	shell_w = 0;
-	function showShell(i) {
-		//window.open("shell.php?id="+messages[i].id);
-		shell_h = $(window).height()-250;
-		shell_w = $(window).width()-300;
-		var url = 'shell.php?id=' + messages[i].id;
-		$.get(url, gotShell);
+	function showShell(id) {
+		$.get('shell.php', { id: id},
+			function(data){
+				shell_h = $(window).height()-250;
+				shell_w = $(window).width()-300;
+				$('#img-container').html("<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>");
+				$('#img-container').show();
+		});
 	}
 
-	function gotShell(data) {
-		document.getElementById('img-container').innerHTML = "<div class='shell-display' style='width:"+shell_w+"px;height:"+shell_h+"px;'><center><span style='cursor: pointer;' onclick='hideImg()'>Click here to close</span></center><div class='shell-display'</span></div><div class='shell-display' style='padding:10px'>"+data+"</div>";
-		document.getElementById('img-container').style.visibility = 'visible';
-	}
-
-	function showFile(i) {
-		window.open("file.php?data="+messages[i].data+"&id="+messages[i].id+"&filename="+messages[i].message.replace("file:","").replace("img:","").replace("vid:",""));
+	function showFile(id,data,message) {
+		window.open("file.php?data="+data+"&id="+id+"&filename="+message.replace("file:","").replace("img:","").replace("vid:","").replace("aud:",""));
 	}
 
 	function fullscreenImg() {
@@ -301,58 +341,13 @@
 	}
 
 	function hideImg() {
-		document.getElementById('img-container').style.visibility = 'hidden';
-		document.getElementById('img-container').innerHTML = "";
+		$('#img-container').hide();
+		$('#img-container').html('');
 	}
 
-	var waitvis = false;
-	function toggleWait() {
-		if (waitvis) {
-			document.getElementById('command-wait-dropdown').style.visibility = 'hidden';
-			waitvis = false;
-		} else {
-			document.getElementById('command-wait-dropdown').style.visibility = 'visible';
-			waitvis = true;
+	function sendRecordAudio(regId) {
+		var seconds = parseInt(prompt("How many seconds", "60"));
+		if (seconds && seconds > 0) {
+			sendPushNotification(regId, "Command:Audio:"+seconds);
 		}
-	}
-	
-	function toggleWaitOff() {
-		if (waitvis) {
-			document.getElementById('command-wait-dropdown').style.visibility = 'hidden';
-			waitvis = false;
-		}
-	}
-
-	function checkForNewMessage(data) {
-		if (waitvis) {
-			if (data && data != "" && data != "[]") {
-				tmpmessages = $.parseJSON(data);
-				if ($.isEmptyObject(messages) || messages[0].created_at != tmpmessages[0].created_at) {
-					loadMessages();
-				} else {
-					waitTimer();
-				}
-			} else {
-				waitTimer();
-			}
-		}
-	}
-
-	function waitTimer() {
-		if (waitvis) {
-			setTimeout( function () { 
-					var url = 'messages.php?n=1&regId=' + regId;
-					$.get(url, checkForNewMessage);
-				}, 5000 // milliseconds delay
-			);
-		}
-	}
-
-	function waitingForResponse() {
-		toggleWait();
-		waitTimer();
-	}
-
-	function cancelWait() {
-		toggleWait();
 	}

@@ -22,11 +22,11 @@
 				$hash = crypt($password, $salt);
 				$token = storeUsername($username, $hash);
 				$token = updatePassword($username, $hash);
-                        	$user = getUserRecord($username);
-                        	setcookie("user_id", $user['user_id']);
-                        	setcookie("username", $username);
-                        	setcookie("token", $token);
-                        	header("Location: index.php");
+			 	$user = getUserRecord($username);
+				setcookie("user_id", $user['user_id']);
+				setcookie("username", $username);
+				setcookie("token", $token);
+				header("Location: index.php");
 				exit;
 			} else {
 				$error = "Username and password do not match.";
