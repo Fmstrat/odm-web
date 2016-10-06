@@ -4,7 +4,11 @@
 
 	function dbconnect() {
 		global $DB_HOST, $DB_USER, $DB_PASSWORD, $DB_DATABASE, $con;
-		$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		if (defined('PDO::MYSQL_ATTR_MAX_BUFFER_SIZE')) {
+			$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD, array(PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50));
+		} else {
+			$con = new PDO('mysql:dbname='.$DB_DATABASE.';host='.$DB_HOST.';charset=utf8', $DB_USER, $DB_PASSWORD);
+		}
 		$con->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		$con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
@@ -51,8 +55,6 @@
 
 	function storeFile($id, $handle) {
 		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $handle, PDO::PARAM_LOB);
@@ -61,8 +63,6 @@
 
 	function storeData($id, $data) {
 		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
