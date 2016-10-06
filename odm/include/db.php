@@ -51,8 +51,6 @@
 
 	function storeFile($id, $handle) {
 		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->bindParam(1, $id);
 		$stmt->bindParam(2, $handle, PDO::PARAM_LOB);
@@ -61,8 +59,6 @@
 
 	function storeData($id, $data) {
 		global $con;
-		$stmt = $con->prepare("SET GLOBAL max_allowed_packet = 524288000"); // 500MB
-		$stmt->execute();
 		$stmt = $con->prepare("INSERT INTO gcm_data(id, data) VALUES(?, ?)");
 		$stmt->execute(array($id, $data));
 	}
